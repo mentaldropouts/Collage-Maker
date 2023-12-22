@@ -8,12 +8,14 @@ from os import walk
 # Output: Object of Image class
 #####################################################################
 class Images:
-    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','gif']):
+    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','gif','png']):
         self.dir = folder
         self.extensions = extensions
         self.w = walk(self.dir)
         self.files = self.throughWalk()
         self.model = 'isnet-general-use'
+        self.output = 'out/'
+        self.specFileName = ""
 
 #####################################################################
 # Purpose: To go through all the images in specified image gallery
@@ -40,6 +42,8 @@ class Images:
 #####################################################################
     
     def removeBack(self):
+            numFile = 0 
+
             # Using the specified model to process the images
             for i in self.files:
                 self.modelSelection(i)
@@ -51,11 +55,19 @@ class Images:
                                     alpha_matting=True, 
                                     alpha_matting_foreground_threshold=self.amForeground, 
                                     alpha_matting_background_threshold=self.amBackground,
-                                    alpha_matting_erode_size=self.amErode)
-                    output.show()
+                                    alpha_matting_erode_size=self.amErode,
+                                    post_process_mask=True)
                 else:
                      output = remove(input, session=session)
-                     output.show()
+                print(i)
+                output.show()
+                file = i.split('/')[-1]
+                name = file.split('.')[0] + ".png"
+                path = "result/person/"+name
+                output.save(path)
+                
+
+               
 
 #####################################################################
 # Purpose: Adding Alpha Matting Thresholds as members of Image Class
@@ -80,11 +92,11 @@ class Images:
              self.model = 'u2net_human_seg'
         else:
              self.model = 'isnet-general-use'
-         
+       
 ###################################################################
 # MAIN DRIVER CODE STARTS HERE 
 #####################################################################
-I = Images("testimages")
+I = Images("out")
 I.throughWalk()
-I.alphaMatInitialize(amBackground=1000, amForeground=900, amErode=10)
+I.alphaMatInitialize()
 I.removeBack()

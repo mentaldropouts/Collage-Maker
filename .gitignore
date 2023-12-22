@@ -1,0 +1,6 @@
+# Ignore Mac system files
+.DS_store
+# Files 
+result/*
+out/*
+_secrets_/*
