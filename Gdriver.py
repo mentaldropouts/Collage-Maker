@@ -58,21 +58,18 @@ class PhotoSearch:
         
         # Define the date range for the search
         date_filter = {
-            "startDate": {"year": 2023, "month": 5, "day": 1},
-            "endDate": {"year": 2023, "month": 6, "day": 15}
+            "startDate": {"year": 2023, "month": 8, "day": 1},
+            "endDate": {"year": 2023, "month": 12, "day": 22}
         }
 
         contentFilter = {
             "includedContentCategories": [
-                "PEOPLE", 
-                "SELFIES",
-                "PETS",
-                "SCREENSHOTS"
+                "SELFIES"
             ],
             "excludedContentCategories": [
                 "UTILITY"
             ]
-        }
+        } 
 
 #####################################################################
 # Purpose: Make the actual request to the Google Servers to pull the 

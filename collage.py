@@ -1,18 +1,21 @@
 from PIL import Image
 import os
+from random import shuffle
 import math
 
 
 
 class NewCollage:
-    def __init__(self, height, width, folder):
-        self.image = [Image.new("RGBA", (height,width)), Image.new("RGBA", (height,width)), Image.new("RGBA", (height,width))]
+    def __init__(self, height, width, folder, num_images):
+        self.image = [Image.new("RGBA", (height,width)) for i in range(num_images)]
+        print(len(self.image))
         self.collageSize = [height,width]
         print(self.collageSize)
         self.dir = folder
+        self.images = []
+
         self.w = os.walk(self.dir)
         
-
     def walk(self):
         filePaths = []
         for dirNames, dirPaths, fileNames in self.w:
@@ -60,11 +63,34 @@ class NewCollage:
                 continue
             target_height = int((target_width / float(image.width)) * image.height)
             image = image.resize((target_width, target_height))
-            # Resize the image to fit the collage
-            assert self.collageSize[0] > 0
-            assert self.collageSize[1] > 0
-            # print( target_width , int(self.collageSize[1] - spacing), image_path)
-            # print("Pasting image onto position -> ", curImagePos)
+            self.images.append(image)
+
+        shuffle(self.images)
+        print("adding images")
+        self.addImages(curFileNum=curFileNum, 
+                       current_x=current_x, 
+                       current_y=current_y,
+                       target_height=target_height,
+                       target_width=target_width,
+                       curImagePos=curImagePos,
+                       spacing=spacing,
+                       num_rows=num_rows)
+
+        # self.showImages()
+            
+    def showImages(self):
+        for i in self.image:
+            i.show()
+
+    def addImagesTogether(self):
+        base = self.image[0]
+        for i in range(0, len(self.image)):
+            base.paste(self.image[i],(0,0),mask = self.image[i])
+        return base
+    
+    def addImages(self, curFileNum, target_width, target_height, spacing, num_rows, curImagePos, current_x, current_y, ):
+        curImage = self.image[curImagePos]
+        for image in self.images:
             print("Pasting",curFileNum , "position: ", current_x, " ", current_y, " on file number ", curImagePos)
             curImage.paste(image, (current_x, current_y))
             current_x += target_width + spacing
@@ -86,23 +112,21 @@ class NewCollage:
                 current_x = 0 
                 current_y = 0
             curFileNum+=1
-        # self.showImages()
-            
-    def showImages(self):
-        for i in self.image:
-            i.show()
-
-    def addImagesTogether(self):
-        base = self.image[0]
-        for i in range(0, len(self.image)):
-            base.paste(self.image[i],(0,0),mask = self.image[i])
-        return base 
     
 def CollageDriver():
     print("Entering CollageDriver")
-    collage = NewCollage(8000,8000,"result/person")
+    collage = NewCollage(8000,8000,"result/person", 10)
     files = collage.walk()
     # print(files)
     collage.createCollage("collage.jpg")
     result = collage.addImagesTogether()
     result.save('test.png')
+
+# LOCALIZED TESTING 
+print("Entering CollageDriver")
+collage = NewCollage(8000,8000,"result/person", 10)
+files = collage.walk()
+    # print(files)
+collage.createCollage("collage.jpg")
+result = collage.addImagesTogether()
+result.save('test.png')

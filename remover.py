@@ -8,7 +8,7 @@ from os import walk,makedirs
 # Output: Object of Image class
 #####################################################################
 class Images:
-    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','gif','png']):
+    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','png']):
         self.dir = folder
         self.extensions = extensions
         self.w = walk(self.dir)
@@ -66,7 +66,7 @@ class Images:
                      output = remove(input, session=session)
                 print(i)
 
-                output.show()
+                # output.show() 
                 file = i.split('/')[-1]
                 name = file.split('.')[0] + ".png"
                 # This is currently hard-coded for only using the person model
