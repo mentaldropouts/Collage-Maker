@@ -17,10 +17,10 @@ contentFilter = {
 } 
 
 # Puts files in place
-GoogleDriver(dateFilter=dateFilter, contentFilter=contentFilter, layeredSearch=False)
+# GoogleDriver(dateFilter=dateFilter, contentFilter=contentFilter, layeredSearch=False)
 
 # Removes these files background
 RemoveDriver(typeOfImage="person")
 
 # Makes them into a collage
-CollageDriver(numLayers=3)
+# CollageDriver(numLayers=3)
