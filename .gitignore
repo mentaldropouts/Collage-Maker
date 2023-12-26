@@ -1,0 +1,9 @@
+# Ignore Mac system files
+.DS_store
+# Files 
+result/*
+out/*
+_secrets_/*
+_pycache_
+test.png
+__pycache__/
