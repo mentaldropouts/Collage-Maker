@@ -10,7 +10,7 @@ import json
 # Output: Object of Image class
 #####################################################################
 class Images:
-    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','png'], typeOfImage='person'):
+    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','png'], typeOfImage='person',usingWeights=False):
         self.dir = folder
         self.extensions = extensions
         self.w = walk(self.dir)
@@ -19,13 +19,11 @@ class Images:
         self.model = 'isnet-general-use'
         self.output = 'out/'
         self.specFileName = ""
+        self.usingWeights=usingWeights
         # used to determine the model, set depending on the content filter
         self.typeOfImage = typeOfImage
         makedirs("result", exist_ok=True)
         makedirs(f'result/{self.typeOfImage}',  exist_ok=True)
-
-        
-
 
 #####################################################################
 # Purpose: To go through all the images in specified image gallery
@@ -50,14 +48,13 @@ class Images:
 # Output: A self.result array containing the images the specified 
 # format.
 #####################################################################
-    def removeBack(self):
+    def removeBack(self, cropBoundingBoxes):
             numFile = 0 
             # Using the specified model to process the images
             for i in self.files:
                 self.modelSelection(i)
                 session = new_session(self.model)
-                input = Image.open(i)
-                
+                input = Image.open(i)    
                 if hasattr(self, 'amForeground'):
                     output = remove(input, 
                                     session=session, 
@@ -67,18 +64,25 @@ class Images:
                                     alpha_matting_erode_size=self.amErode,
                                     post_process_mask=True)
                 else:
-                     output = remove(input, session=session)
+
+                    output = remove(input, session=session)
+                # Getting rid of unneeded whitespace
+                if cropBoundingBoxes:
+                    boundingBox = output.getbbox()
+                    output = output.crop(boundingBox)
+
                 # output.show() 
                 file = i.split('/')[-1]
                 name = file.split('.')[0] + ".png"
                 # This is currently hard-coded for only using the person model
                 path = f"result/{self.typeOfImage}/"+name
                 output.save(path)
+                print("Saving at ", path)
                 #Getting the transparent weights for each image
-                data = output.getdata()
-                non_transparent_count = sum(1 for pixel in data if pixel[3 ] > 0)
-                self.weights[path] = non_transparent_count
-
+                if self.usingWeights:
+                    data =  output.getdata()
+                    non_transparent_count = sum(1 for pixel in data if pixel[3 ] > 0)
+                    self.weights[path] = non_transparent_count
                 
 #####################################################################
 # Purpose: Adding Alpha Matting Thresholds as members of Image Class
@@ -118,9 +122,9 @@ class Images:
 ###################################################################
 # MAIN DRIVER CODE STARTS HERE 
 ###################################################################
-def RemoveDriver(typeOfImage):
+def RemoveDriver(typeOfImage, useWeights, cropBoundingBoxes):
     print("Entering RemoveDriver")
-    I = Images(folder="out",typeOfImage=typeOfImage)
+    I = Images(folder="out",typeOfImage=typeOfImage, usingWeights=useWeights)
     I.throughWalk()
     I.alphaMatInitialize()
 
@@ -128,13 +132,14 @@ def RemoveDriver(typeOfImage):
          print("pulling from existing results/{self.typeOfImage}")
     else: 
         print("Removing the back of images")
-        I.removeBack()
+        I.removeBack(cropBoundingBoxes)
 
-    # Check for the file 
-    if os.path.exists('weight.json'):
-        print("pulling from existing weights.json")
-    else:
-        I.writeWeights('weights.json')
+    if useWeights:
+        # Check for the file 
+        if os.path.exists('weight.json'):
+            print("pulling from existing weights.json")
+        else:
+            I.writeWeights('weights.json')
 
 
    

@@ -16,11 +16,14 @@ contentFilter = {
     ]
 } 
 
+weights = False
+cropBoundingBoxes = True
+
 # Puts files in place
 # GoogleDriver(dateFilter=dateFilter, contentFilter=contentFilter, layeredSearch=False)
 
 # Removes these files background
-RemoveDriver(typeOfImage="person")
+# RemoveDriver(typeOfImage="person", useWeights=weights, crop=cropBoundingBoxes)
 
 # Makes them into a collage
-# CollageDriver(numLayers=3)
+CollageDriver(height=2000, width=2000, numLayers=3, useWeights=weights, spacing=50)

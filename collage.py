@@ -1,10 +1,8 @@
 from PIL import Image
 import os
-from random import shuffle
+from random import shuffle,randint
 import math
 import json
-
-
 
 class NewCollage:
     def __init__(self, height, width, folder, num_images):
@@ -29,12 +27,13 @@ class NewCollage:
         self.partition = len(filePaths) // len(self.image)
         print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.image))
 
-
-    def transparentWeightSorting(self):
+    def openImages(self):
 
         os.makedirs("out", exist_ok=True)
         # Get a list of image files in the folder
-        self.image_files = [f for f in os.listdir(self.dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        self.image_files = [os.path.join(folder, f) for folder, _, files in os.walk(self.dir) for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+    def transparentWeightSorting(self):
         # Read the dictionary from the file
         with open(self.weights_path, 'r') as json_file:
             print("opening ", str(self.weights_path))
@@ -44,57 +43,53 @@ class NewCollage:
         sorted_tuple_array = sorted(tuple_array, key=lambda x: x[1], reverse=True)
         imagePaths = [x[0] for x in sorted_tuple_array]
         
-
         self.image_files.clear()
         self.image_files = imagePaths
 
     
-    def createCollage(self, collage_filename="collage.jpg", spacing=2):
-        # Ensure the directory exists
+    def createCollage(self, spacing):
+        self.spacing = spacing
+
         # Check if there are any images in the folder
         if not self.image_files:
             print("No image files found in the folder.")
             return None
+
         # Open and paste each image into the collage
-        current_x, current_y = 0, 0
+        self.current_x, self.current_y = 0, 0
         max_height = self.collageSize[1]
         max_width = self.collageSize[0]
-        num_images = len(self.image_files)
-        # num_rows = max_height // (max_width // num_images + spacing)
-        # num_rows = int(math.sqrt(num_images)) // len(self.image)
-        num_rows = int(math.sqrt(self.partition))
-        num_col = int(math.sqrt(self.partition))
-        print("num_rows: ", num_rows, "num_images: ", num_images, "num_images_per_partition: ", self.partition)
-        # Calculate the target width and height based on max_width and max_height
-        target_width = max_width // (num_col)
-        target_height = max_height // (num_rows)
-        print("target_height: ", target_height, "target_width: ", target_width)
-        curFileNum = 1
-        curImagePos = 0
-        curImage = self.image[curImagePos]
+        self.num_rows = int(math.sqrt(self.partition))
+
+        self.curFileNum = 1
+        self.curImagePos = 0
 
         for imageFile in self.image_files:
             try:
                 image = Image.open(imageFile)
+                
+                # Calculate target dimensions based on aspect ratio
+                aspect_ratio = image.width / image.height
+                if aspect_ratio > 1:  # Landscape image
+                    self.target_width = max_width // self.num_rows
+                    self.target_height = int(self.target_width / aspect_ratio)
+                else:  # Portrait image
+                    self.target_height = max_height // self.num_rows
+                    self.target_width = int(self.target_height * aspect_ratio)
+                
             except Exception as e:
                 print(f"Error opening image {imageFile}: {e}")
                 continue
-            target_height = int((target_width / float(image.width)) * image.height)
-            image = image.resize((target_width, target_height))
+
+            print("target_height: ", self.target_height, "target_width: ", self.target_width)
+            image = image.resize((self.target_width, self.target_height))
             self.images.append(image)
 
         print("adding images")
-        self.addImages(curFileNum=curFileNum, 
-                       current_x=current_x, 
-                       current_y=current_y,
-                       target_height=target_height,
-                       target_width=target_width,
-                       curImagePos=curImagePos,
-                       spacing=spacing,
-                       num_rows=num_rows)
+        self.addImages()
 
         # self.showImages()
-            
+                
     def showImages(self):
         for i in self.image:
             i.show()
@@ -108,48 +103,59 @@ class NewCollage:
     def addImagesTogether(self):
         base = self.image[0]
         for i in range(0, len(self.image)):
-            base.paste(self.image[i],(0,0),mask = self.image[i])
+            if i == 0:
+                base.paste(self.image[i],(0,0),mask = self.image[i])
+            else:
+                randWidth = randint(100,250)
+                randHeight = randint(100,250)
+                base.paste(self.image[i],(randWidth,randHeight),mask = self.image[i])
         return base
     
-    def addImages(self, curFileNum, target_width, target_height, spacing, num_rows, curImagePos, current_x, current_y, ):
-        curImage = self.image[curImagePos]
+    def addImages(self):
+        shuffle(self.images)
+        curImage = self.image[self.curImagePos]
         for image in self.images:
-            print("Pasting",curFileNum , "position: ", current_x, " ", current_y, " on file number ", curImagePos)
-            curImage.paste(image, (current_x, current_y))
-            current_x += target_width + spacing
+            print(f"Pasting {self.curFileNum:<3} position:  {self.current_x:<5}   {self.current_y:<5}  on file number  {self.curImagePos:<2}")
+            curImage.paste(image, (self.current_x, self.current_y))
+            self.current_x += self.target_width + self.spacing
             # If the number of imported files is greater than number of rows
-            if curFileNum % num_rows == 0:
+            if self.curFileNum % self.num_rows == 0:
                 # Move the y value down appropriately
-                current_y += target_height + spacing
-                current_x = 0
+                self.current_y += self.target_height + self.spacing
+                self.current_x = 0
                 # print("curFileNum: ", curFileNum)
-            portionValue = curFileNum % self.partition
-            print(portionValue, "-> ", curFileNum, "%", self.partition)
+            portionValue = self.curFileNum % self.partition
+            # print(portionValue, "-> ", self.curFileNum, "%", self.partition)
             if portionValue == 0:
-                print()
-                curImagePos += 1 
-                if curImagePos >= len(self.image):
+                self.curImagePos += 1 
+                if self.curImagePos >= len(self.image):
                     break
-                curImage = self.image[curImagePos]
-                curFileNum = 0
-                current_x = 0 
-                current_y = 0
-            curFileNum+=1
+                curImage = self.image[self.curImagePos]
+                self.curFileNum = 0
+                self.current_x = 0 
+                self.current_y = 0
+            self.curFileNum+=1
     
-def CollageDriver(numLayers):
+def CollageDriver(height, width, numLayers, useWeights, spacing):
     print("Entering CollageDriver")
-    collage = NewCollage(8000,8000,"result/", numLayers)
+    collage = NewCollage(height, width, "result/", numLayers)
     collage.walk()
-    collage.transparentWeightSorting()
-    collage.createCollage("collage.jpg")
+    collage.openImages()
+    if useWeights:
+        collage.transparentWeightSorting()
+
+    collage.createCollage(spacing)
     result = collage.addImagesTogether()
+    boundingBox = result.getbbox()
+    result = result.crop(boundingBox)
     result.save('test.png')
 
 # LOCALIZED TESTING 
-print("Entering CollageDriver")
-collage = NewCollage(8000,8000,"result/person", 7)
-collage.walk()
-collage.transparentWeightSorting()
-collage.createCollage("collage.jpg")
-result = collage.addImagesTogether()
-result.save('test.png')
+# print("Entering CollageDriver")
+# collage = NewCollage(2000,2000,"result/person", 3)
+# collage.walk()
+# collage.openImages()
+# spacing = 10
+# collage.createCollage(spacing=spacing)
+# result = collage.addImagesTogether()
+# result.save('test.png')
