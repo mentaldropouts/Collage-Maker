@@ -1,3 +1,5 @@
+# Use this branch for random image placement
+
 Models are downloaded to: "Users/{username}/.u2net/" directory
 To review the rembg docs go to: https://github.com/danielgatis/rembg?tab=readme-ov-file
 
