@@ -11,7 +11,6 @@ from IPython import display
 
 
 class PhotoSearch:
-
 #####################################################################
 # Purpose: Initializing the Google Photos API and utilizing it to 
 # search for specific photographs given filters
@@ -47,29 +46,6 @@ class PhotoSearch:
         self.nextPageToken = None
         self.idx = 0
         self.media_items = []
-
-#####################################################################
-# Purpose: Initializing the filters that you want to use in the 
-# search
-# Input: Specific filters with parameters in Json format
-# Output: Class object should have new fields related to the filters
-#####################################################################
-
-        
-        # Define the date range for the search
-        date_filter = {
-            "startDate": {"year": 2023, "month": 8, "day": 1},
-            "endDate": {"year": 2023, "month": 12, "day": 22}
-        }
-
-        contentFilter = {
-            "includedContentCategories": [
-                "SELFIES"
-            ],
-            "excludedContentCategories": [
-                "UTILITY"
-            ]
-        } 
 
 #####################################################################
 # Purpose: Make the actual request to the Google Servers to pull the 
@@ -148,8 +124,9 @@ class PhotoSearch:
 
         print("Images saved to 'out' directory.")
 
-def GoogleDriver():
+
+def GoogleDriver(dateFilter, contentFilter):
     print("Entering GoogleDriver")
     instance = PhotoSearch()
-    instance.setup()
+    instance.setup(dateFilter, contentFilter)
     

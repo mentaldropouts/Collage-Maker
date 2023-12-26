@@ -8,9 +8,7 @@ import math
 class NewCollage:
     def __init__(self, height, width, folder, num_images):
         self.image = [Image.new("RGBA", (height,width)) for i in range(num_images)]
-        print(len(self.image))
         self.collageSize = [height,width]
-        print(self.collageSize)
         self.dir = folder
         self.images = []
 
@@ -25,10 +23,10 @@ class NewCollage:
     
         # Number of images that are to be included in each individual collage
         self.partition = len(filePaths) // len(self.image)
-        print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.image))
+        # print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.image))
         return filePaths
     
-    def createCollage(self, collage_filename="collage.jpg", spacing=2):
+    def createCollage(self, spacing=2):
         # Ensure the directory exists
         os.makedirs("out", exist_ok=True)
         # Get a list of image files in the folder
@@ -42,15 +40,11 @@ class NewCollage:
         max_height = self.collageSize[1]
         max_width = self.collageSize[0]
         num_images = len(image_files)
-        # num_rows = max_height // (max_width // num_images + spacing)
-        # num_rows = int(math.sqrt(num_images)) // len(self.image)
         num_rows = int(math.sqrt(self.partition))
         num_col = int(math.sqrt(self.partition))
-        print("num_rows: ", num_rows, "num_images: ", num_images, "num_images_per_partition: ", self.partition)
         # Calculate the target width and height based on max_width and max_height
         target_width = max_width // (num_col)
         target_height = max_height // (num_rows)
-        print("target_height: ", target_height, "target_width: ", target_width)
         curFileNum = 1
         curImagePos = 0
         curImage = self.image[curImagePos]
@@ -65,7 +59,6 @@ class NewCollage:
             image = image.resize((target_width, target_height))
             self.images.append(image)
 
-        shuffle(self.images)
         print("adding images")
         self.addImages(curFileNum=curFileNum, 
                        current_x=current_x, 
@@ -90,9 +83,15 @@ class NewCollage:
     
     def addImages(self, curFileNum, target_width, target_height, spacing, num_rows, curImagePos, current_x, current_y, ):
         curImage = self.image[curImagePos]
+
         for image in self.images:
-            print("Pasting",curFileNum , "position: ", current_x, " ", current_y, " on file number ", curImagePos)
+            # Calculating the scaling factor of each image
+            target_area = target_height * target_width
+            image_area = image.width * image.height
+            scale = target_area // image_area 
+            print("Pasting",curFileNum , "position: ", current_x, " ", current_y, " on file number ", curImagePos, "With a scale of ", scale)
             curImage.paste(image, (current_x, current_y))
+            # moving the image over x
             current_x += target_width + spacing
             # If the number of imported files is greater than number of rows
             if curFileNum % num_rows == 0:
@@ -101,7 +100,7 @@ class NewCollage:
                 current_x = 0
                 # print("curFileNum: ", curFileNum)
             portionValue = curFileNum % self.partition
-            print(portionValue, "-> ", curFileNum, "%", self.partition)
+            # print(portionValue, "-> ", curFileNum, "%", self.partition)
             if portionValue == 0:
                 print()
                 curImagePos += 1 
@@ -113,20 +112,18 @@ class NewCollage:
                 current_y = 0
             curFileNum+=1
     
-def CollageDriver():
+def CollageDriver(numLayers):
     print("Entering CollageDriver")
-    collage = NewCollage(8000,8000,"result/person", 10)
-    files = collage.walk()
-    # print(files)
-    collage.createCollage("collage.jpg")
+    collage = NewCollage(2000,2000,"result/person", numLayers)
+    collage.walk()
+    collage.createCollage()
     result = collage.addImagesTogether()
     result.save('test.png')
 
 # LOCALIZED TESTING 
 print("Entering CollageDriver")
-collage = NewCollage(8000,8000,"result/person", 10)
-files = collage.walk()
-    # print(files)
-collage.createCollage("collage.jpg")
+collage = NewCollage(1000,1000,"result/person", 1)
+collage.walk()
+collage.createCollage()
 result = collage.addImagesTogether()
 result.save('test.png')

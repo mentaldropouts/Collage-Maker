@@ -70,7 +70,6 @@ class Images:
                 file = i.split('/')[-1]
                 name = file.split('.')[0] + ".png"
                 # This is currently hard-coded for only using the person model
-            
                 path = "result/person/"+name
                 output.save(path)
                 
@@ -107,3 +106,11 @@ def RemoveDriver():
     I.throughWalk()
     I.alphaMatInitialize()
     I.removeBack()
+
+# LOCAL 
+print("Entering RemoveDriver")
+I = Images("out")
+I.modelSelection('result/person/')
+I.throughWalk()
+I.alphaMatInitialize()
+I.removeBack()
