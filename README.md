@@ -1,15 +1,14 @@
-# Use this branch for images sorted from largest to smallest amount of whitespace
+# Automatic Collage Maker
 
-Models are downloaded to: "Users/{username}/.u2net/" directory
-To review the rembg docs go to: https://github.com/danielgatis/rembg?tab=readme-ov-file
+![badmath](https://img.shields.io/github/languages/top/mentaldropouts/collageApp)
 
-# Steps to run this program
-1. Get your google credentials file from the Google Cloud Console and place it in a folder called:<br> \_secrets_/credientials.json
-2. Edit the filters in the file "GDriver.py" file to your liking 
-3. run the file "main.py" 
+## Description
 
-Then your collage will be saved as test.png
+Provide a short description explaining the what, why, and how of your project. Use the following questions as a guide:
 
+I made this application because I love making collages. This program makes the process of making a collage completely automated. By using a credential.json file that you get from the Google Cloud Console, you can give the program access to your google information and it will pull photos automatically from your account. All you have to do is specify the filters you want to use in and run main.py.
 
+## Usage
+To use this program you first need to add your credentials.json file to a folder named \_secret_ in your cloned copy of the repo. For security reasons, this folder has been included in the .gitignore file so don't worry about accidentally commiting your google account information.
 
-If you have all the photos that you want in your result folder then you can uncomment the code at the end of "collage.py" and just run that file to make the collage with your local photos.
+Then once you have that set up you can set the filters and other paramters that you want to use in the main.py file and then run it. Then your collage should be saved to test.png.
