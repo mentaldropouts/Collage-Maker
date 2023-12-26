@@ -1,8 +1,4 @@
-### This Branch sorts the images by the amount of white space it has
-#### Images with less white space will be placed at the front 
-
-##### ISSUES: This seems to create good collages in each cell but as a whole the pictures contain more white space between each row. 
-
+# Use this branch for images sorted from largest to smallest amount of whitespace
 
 Models are downloaded to: "Users/{username}/.u2net/" directory
 To review the rembg docs go to: https://github.com/danielgatis/rembg?tab=readme-ov-file
