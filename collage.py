@@ -2,6 +2,7 @@ from PIL import Image
 import os
 from random import shuffle
 import math
+import json
 
 
 
@@ -13,6 +14,7 @@ class NewCollage:
         print(self.collageSize)
         self.dir = folder
         self.images = []
+        self.weights_path = 'weights.json'
 
         self.w = os.walk(self.dir)
         
@@ -26,22 +28,38 @@ class NewCollage:
         # Number of images that are to be included in each individual collage
         self.partition = len(filePaths) // len(self.image)
         print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.image))
-        return filePaths
+
+
+    def transparentWeightSorting(self):
+
+        os.makedirs("out", exist_ok=True)
+        # Get a list of image files in the folder
+        self.image_files = [f for f in os.listdir(self.dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        # Read the dictionary from the file
+        with open(self.weights_path, 'r') as json_file:
+            print("opening ", str(self.weights_path))
+            loaded_dict = json.load(json_file) 
+        # Sorting images in largest to smallest order
+        tuple_array = [(key, value) for key, value in loaded_dict.items()]
+        sorted_tuple_array = sorted(tuple_array, key=lambda x: x[1], reverse=True)
+        imagePaths = [x[0] for x in sorted_tuple_array]
+        
+
+        self.image_files.clear()
+        self.image_files = imagePaths
+
     
     def createCollage(self, collage_filename="collage.jpg", spacing=2):
         # Ensure the directory exists
-        os.makedirs("out", exist_ok=True)
-        # Get a list of image files in the folder
-        image_files = [f for f in os.listdir(self.dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
         # Check if there are any images in the folder
-        if not image_files:
+        if not self.image_files:
             print("No image files found in the folder.")
             return None
         # Open and paste each image into the collage
         current_x, current_y = 0, 0
         max_height = self.collageSize[1]
         max_width = self.collageSize[0]
-        num_images = len(image_files)
+        num_images = len(self.image_files)
         # num_rows = max_height // (max_width // num_images + spacing)
         # num_rows = int(math.sqrt(num_images)) // len(self.image)
         num_rows = int(math.sqrt(self.partition))
@@ -54,10 +72,10 @@ class NewCollage:
         curFileNum = 1
         curImagePos = 0
         curImage = self.image[curImagePos]
-        for imageFile in image_files:
-            image_path = os.path.join(self.dir, imageFile)
+
+        for imageFile in self.image_files:
             try:
-                image = Image.open(image_path)
+                image = Image.open(imageFile)
             except Exception as e:
                 print(f"Error opening image {imageFile}: {e}")
                 continue
@@ -65,7 +83,6 @@ class NewCollage:
             image = image.resize((target_width, target_height))
             self.images.append(image)
 
-        shuffle(self.images)
         print("adding images")
         self.addImages(curFileNum=curFileNum, 
                        current_x=current_x, 
@@ -81,7 +98,13 @@ class NewCollage:
     def showImages(self):
         for i in self.image:
             i.show()
-
+    
+#####################################################################
+# Purpose: Combining the multiple collages in self.images into a 
+# single image
+# Input: NewCollage object with self.images filled with images
+# Output: The data for the final collage
+#####################################################################
     def addImagesTogether(self):
         base = self.image[0]
         for i in range(0, len(self.image)):
@@ -113,20 +136,20 @@ class NewCollage:
                 current_y = 0
             curFileNum+=1
     
-def CollageDriver():
+def CollageDriver(numLayers):
     print("Entering CollageDriver")
-    collage = NewCollage(8000,8000,"result/person", 10)
-    files = collage.walk()
-    # print(files)
+    collage = NewCollage(8000,8000,"result/", numLayers)
+    collage.walk()
+    collage.transparentWeightSorting()
     collage.createCollage("collage.jpg")
     result = collage.addImagesTogether()
     result.save('test.png')
 
 # LOCALIZED TESTING 
 print("Entering CollageDriver")
-collage = NewCollage(8000,8000,"result/person", 10)
-files = collage.walk()
-    # print(files)
+collage = NewCollage(8000,8000,"result/person", 7)
+collage.walk()
+collage.transparentWeightSorting()
 collage.createCollage("collage.jpg")
 result = collage.addImagesTogether()
 result.save('test.png')

@@ -11,14 +11,13 @@ from IPython import display
 
 
 class PhotoSearch:
-
 #####################################################################
 # Purpose: Initializing the Google Photos API and utilizing it to 
 # search for specific photographs given filters
 # Input: Your Google Credentials.json in a folder called "_secrets_"
 # Output: A class object of PhotoSearch that can hold the results
 #####################################################################
-    def setup(self):
+    def setup(self, date_filter, contentFilter):
         # Define the API endpoint for mediaItems search
         self.api_url = 'https://photoslibrary.googleapis.com/v1/mediaItems:search'
 
@@ -55,21 +54,8 @@ class PhotoSearch:
 # Output: Class object should have new fields related to the filters
 #####################################################################
 
-        
-        # Define the date range for the search
-        date_filter = {
-            "startDate": {"year": 2023, "month": 8, "day": 1},
-            "endDate": {"year": 2023, "month": 12, "day": 22}
-        }
+    
 
-        contentFilter = {
-            "includedContentCategories": [
-                "SELFIES"
-            ],
-            "excludedContentCategories": [
-                "UTILITY"
-            ]
-        } 
 
 #####################################################################
 # Purpose: Make the actual request to the Google Servers to pull the 
@@ -77,6 +63,7 @@ class PhotoSearch:
 # Input: The filters added in addFilters()
 # Output: The response stored in self.media_items
 #####################################################################
+        
         while True:
             self.idx += 1
             print("index: ",self.idx)
@@ -148,8 +135,61 @@ class PhotoSearch:
 
         print("Images saved to 'out' directory.")
 
-def GoogleDriver():
+
+
+
+######################################################################
+# Purpose: Deleting the weights.json file since you are getting news
+# iamges from Photos 
+# Input: weights.json file
+# Output: a hole where weights.json used to be :(
+######################################################################
+                
+    def delete_json_file(self, file_path):
+        try:
+            os.remove(file_path)
+            print(f"File '{file_path}' deleted successfully.")
+        except FileNotFoundError:
+            print(f"File '{file_path}' not found.")
+        except Exception as e:
+            print(f"An error occurred while deleting the file: {e}")
+
+######################################################################
+# Purpose: Deleting the out/ and result/ folders.
+# Input: out/ and result/ folders that are filled
+# Output: out/ and result/ are no were to be found.
+######################################################################
+    def delete_folders(self, folderName):
+        try:    
+            # Walk through the directory and delete all files and subdirectories
+            for root, dirs, files in os.walk(folderName, topdown=False):
+                for file in files:
+                    print(file)
+                    file_path = os.path.join(root, file)
+                    os.remove(file_path)
+                for dir in dirs:
+                    print(dir)
+                    dir_path = os.path.join(root, dir)
+                    os.rmdir(dir_path)
+            
+            # Remove the top-level directory
+            os.rmdir(folderName)
+            print(f"Folder '{folderName}' deleted successfully.")
+        except Exception as e:
+            print(f"An error occurred while deleting the folder: {e}")
+                
+def GoogleDriver(dateFilter, contentFilter, layeredSearch=False):
     print("Entering GoogleDriver")
     instance = PhotoSearch()
-    instance.setup()
+    instance.delete_json_file('weights.json')
+    # LayeredSearch determines if there are multiple searches with different
+    # content filters. Since you would want to keep the old searches results 
+    # you wouldn't clear them.
+    if layeredSearch == False:
+        if os.path.exists('result'):
+            instance.delete_folders('result')
+        if os.path.exists('out'):
+            instance.delete_folders('out')
+
+    instance.setup(dateFilter, contentFilter)
     
