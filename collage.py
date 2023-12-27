@@ -106,8 +106,13 @@ class NewCollage:
             if i == 0:
                 base.paste(self.image[i],(0,0),mask = self.image[i])
             else:
-                randWidth = randint(100,250)
-                randHeight = randint(100,250)
+                if i % 2 == 0: 
+                    randWidth = randint(50,300)
+                    randHeight = randint(100,150)
+                elif i % 2 == 1:
+                    randWidth = randint(-300, -50)
+                    randHeight = randint(-150, -100)
+
                 base.paste(self.image[i],(randWidth,randHeight),mask = self.image[i])
         return base
     

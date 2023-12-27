@@ -10,8 +10,9 @@ import json
 # Output: Object of Image class
 #####################################################################
 class Images:
-    def __init__(self, folder = 'testImages', extensions = ['jpg','jpeg','png'], typeOfImage='person',usingWeights=False):
-        self.dir = folder
+    def __init__(self, directory = 'testImages', extensions = ['jpg','jpeg','png'], typeOfImages= None ,usingWeights=False):
+        self.typeOfImages = typeOfImages
+        self.dir = f"{directory}/{typeOfImages}"
         self.extensions = extensions
         self.w = walk(self.dir)
         self.files = self.throughWalk()
@@ -21,9 +22,8 @@ class Images:
         self.specFileName = ""
         self.usingWeights=usingWeights
         # used to determine the model, set depending on the content filter
-        self.typeOfImage = typeOfImage
         makedirs("result", exist_ok=True)
-        makedirs(f'result/{self.typeOfImage}',  exist_ok=True)
+        # makedirs(f'result/{self.typeOfImages}',  exist_ok=True)
 
 #####################################################################
 # Purpose: To go through all the images in specified image gallery
@@ -33,9 +33,12 @@ class Images:
 #####################################################################
     def throughWalk(self):
         filePaths = []
+
         for dirNames, dirPaths, fileNames in self.w:
+             print("Directories: ", dirNames)
              for file in fileNames:  
                   filePath = str(dirNames+'/'+file)
+                  
                   extension = filePath.split('.')[1]
                   if extension in self.extensions:
                     filePaths.append(filePath)
@@ -68,6 +71,7 @@ class Images:
                     output = remove(input, session=session)
                 # Getting rid of unneeded whitespace
                 if cropBoundingBoxes:
+                    print("cropping to bounding box")
                     boundingBox = output.getbbox()
                     output = output.crop(boundingBox)
 
@@ -75,7 +79,7 @@ class Images:
                 file = i.split('/')[-1]
                 name = file.split('.')[0] + ".png"
                 # This is currently hard-coded for only using the person model
-                path = f"result/{self.typeOfImage}/"+name
+                path = f"result/"+name
                 output.save(path)
                 print("Saving at ", path)
                 #Getting the transparent weights for each image
@@ -105,8 +109,6 @@ class Images:
               self.model = 'isnet-anime'
         elif '/person/' in imagePath:
              self.model = 'u2net_human_seg'
-        else:
-             self.model = 'isnet-general-use'
 
 #####################################################################
 # Purpose: Writing transparency weights to a file
@@ -122,17 +124,13 @@ class Images:
 ###################################################################
 # MAIN DRIVER CODE STARTS HERE 
 ###################################################################
-def RemoveDriver(typeOfImage, useWeights, cropBoundingBoxes):
+def RemoveDriver(dir, typeOfImages, useWeights, crop):
     print("Entering RemoveDriver")
-    I = Images(folder="out",typeOfImage=typeOfImage, usingWeights=useWeights)
+
+    I = Images(directory=dir, typeOfImages=typeOfImages, usingWeights=useWeights)
     I.throughWalk()
     I.alphaMatInitialize()
-
-    if os.path.exists('result/{self.typeOfImage}'):
-         print("pulling from existing results/{self.typeOfImage}")
-    else: 
-        print("Removing the back of images")
-        I.removeBack(cropBoundingBoxes)
+    I.removeBack(crop)
 
     if useWeights:
         # Check for the file 

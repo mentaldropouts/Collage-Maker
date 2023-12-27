@@ -12,3 +12,6 @@ I made this application because I love making collages. This program makes the p
 To use this program you first need to add your credentials.json file to a folder named \_secret_ in your cloned copy of the repo. For security reasons, this folder has been included in the .gitignore file so don't worry about accidentally commiting your google account information.
 
 Then once you have that set up you can set the filters and other paramters that you want to use in the main.py file and then run it. Then your collage should be saved to test.png.
+
+## Example 
+![alt text](Example.png)
