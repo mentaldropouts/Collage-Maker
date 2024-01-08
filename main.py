@@ -1,36 +1,52 @@
 from Gdriver import GoogleDriver
 from remover import RemoveDriver
 from collage import CollageDriver
+from tkinter import *
+from tkinter import ttk
 
-dateFilter = {
-    "startDate": {"year": 2023, "month": 1, "day": 1},
-    "endDate": {"year": 2023, "month": 3, "day": 22}
-}
 
-contentFilter = {
-    "includedContentCategories": [
-        "SELFIES"
-    ],
-    "excludedContentCategories": [
-        "UTILITY"
-    ]
-} 
+class mainDriver():
+    def __init__(self) -> None:
+        self.height = 1000
+        self.width = 1000  
+        self.numLayers = 3
+        self.spacing = 10
+        self.startDate = [2023, 10, 18]    
+        self.endDate = [2023, 11, 18]    
 
-# STATES
-weights = False
-cropBoundingBoxes = True
-searchForImages = False
-removeBackImages = True
 
-imageDir = 'testImages'
+        self.dateFilter = {
+            "startDate": {"year": self.startDate[0], "month": self.startDate[1], "day": self.startDate[2]},
+            "endDate": {"year": 2023, "month": 11, "day": 18}
+        }
 
-if searchForImages:
-    GoogleDriver(dateFilter=dateFilter, contentFilter=contentFilter, layeredSearch=True)
+        self.contentFilter = {
+            "includedContentCategories": [
+                "SELFIES",
+                "PETS",
+                "LANDSCAPES",
+                "PEOPLE"
+            ],
+            "excludedContentCategories": [
+                "UTILITY"
+            ]
+        } 
 
-if removeBackImages:
-    # Removes these fil es background
-    RemoveDriver(dir=imageDir,typeOfImages="person", useWeights=weights, crop=cropBoundingBoxes)
-    RemoveDriver(dir=imageDir, typeOfImages="anime", useWeights=weights, crop=cropBoundingBoxes)
+        # STATES
+        self.weights = False
+        self.cropBoundingBoxes = True
+        self.searchForImages = False
+        self.removeBackImages = False
 
-# Makes them into a collage
-CollageDriver(height=2000, width=2000, numLayers=6, useWeights=weights, spacing=50)
+        self.imageDir = 'out'
+
+        if self.searchForImages:
+            GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.contentFilter, layeredSearch=True)
+
+        if self.removeBackImages:
+            # Removes these fil es background
+            RemoveDriver(dir=self.imageDir,typeOfImages="person", useWeights=self.weights, crop=self.cropBoundingBoxes)
+            RemoveDriver(dir=self.imageDir, typeOfImages="anime", useWeights=self.weights, crop=self.cropBoundingBoxes)
+
+        # Makes them into a collage
+        # CollageDriver(height=self.height, width=self.width, numLayers=self.numLayers, useWeights=self.weights, spacing=self.spacing)

@@ -12,7 +12,7 @@ import json
 class Images:
     def __init__(self, directory = 'testImages', extensions = ['jpg','jpeg','png'], typeOfImages= None ,usingWeights=False):
         self.typeOfImages = typeOfImages
-        self.dir = f"{directory}/{typeOfImages}"
+        self.dir = f"{directory}"
         self.extensions = extensions
         self.w = walk(self.dir)
         self.files = self.throughWalk()
@@ -126,7 +126,6 @@ class Images:
 ###################################################################
 def RemoveDriver(dir, typeOfImages, useWeights, crop):
     print("Entering RemoveDriver")
-
     I = Images(directory=dir, typeOfImages=typeOfImages, usingWeights=useWeights)
     I.throughWalk()
     I.alphaMatInitialize()

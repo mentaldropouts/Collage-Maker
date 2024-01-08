@@ -1,0 +1,227 @@
+import sys
+import random
+from PySide6 import QtCore, QtWidgets, QtGui
+from main import mainDriver
+
+class MainWindow(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.driver = mainDriver()
+        self.layout = QtWidgets.QGridLayout(self)
+        
+        self.credButton = QtWidgets.QPushButton("Choose Credentials")
+        self.layout.addWidget(self.credButton, 0,0, 1,1)
+
+        # Configuring Toggle Group 
+        self.toggleGroup = QtWidgets.QGridLayout()
+        self.weightsToggler = QtWidgets.QCheckBox("Use Weights")
+        self.cropToggler = QtWidgets.QCheckBox("Crop Bounding Boxes")
+        self.searchForImages = QtWidgets.QCheckBox("Search For Images")
+        self.removeBackImages = QtWidgets.QCheckBox("Remove Back Images")
+        self.toggleGroup.addWidget(self.searchForImages, 0,0)
+        self.toggleGroup.addWidget(self.removeBackImages, 0,1)
+        self.toggleGroup.addWidget(self.weightsToggler, 1,0)
+        self.toggleGroup.addWidget(self.cropToggler, 1,1)
+
+        # Configuring Content Group
+        self.contentGroup = QtWidgets.QGridLayout()
+        self.animalBox = QtWidgets.QCheckBox("ANIMALS")
+        self.artsBox = QtWidgets.QCheckBox("ARTS")
+        self.birthdayBox = QtWidgets.QCheckBox("BIRTHDAYS")
+        self.cityBox = QtWidgets.QCheckBox("CITYSCAPES")
+        self.craftsBox = QtWidgets.QCheckBox("CRAFTS")
+        self.docBox = QtWidgets.QCheckBox("DOCUMENTS")
+        self.fashionBox = QtWidgets.QCheckBox("FASHION")
+        self.flowersBox = QtWidgets.QCheckBox("FLOWERS")
+        self.foodBox = QtWidgets.QCheckBox("FOOD")
+        self.gardenBox = QtWidgets.QCheckBox("GARDENS")
+        self.holidaysBox = QtWidgets.QCheckBox("HOLIDAYS")
+        self.housesBox = QtWidgets.QCheckBox("HOUSES")
+        self.landBox = QtWidgets.QCheckBox("LANDSCAPES")
+        self.nightBox = QtWidgets.QCheckBox("NIGHT")
+        self.peopleBox = QtWidgets.QCheckBox("PEOPLE")
+        self.perfBox = QtWidgets.QCheckBox("PERFORMANCES")
+        self.petsBox = QtWidgets.QCheckBox("PETS")
+        self.recBox = QtWidgets.QCheckBox("RECEIPTS")
+        self.screenBox = QtWidgets.QCheckBox("SCREENSHOTS")
+        self.selBox = QtWidgets.QCheckBox("SELFIES")
+        self.sportBox = QtWidgets.QCheckBox("SPORTS")
+        self.travelBox = QtWidgets.QCheckBox("TRAVEL")
+        self.utilityBox = QtWidgets.QCheckBox("UTILITY")
+        self.weddingBox = QtWidgets.QCheckBox("WEDDINGS")
+        self.whiteBoards = QtWidgets.QCheckBox("WHITEBOARDS")
+        self.contentGroup.addWidget(self.animalBox, 0,0)
+        self.contentGroup.addWidget(self.artsBox, 1,0)
+        self.contentGroup.addWidget(self.birthdayBox, 2,0)
+        self.contentGroup.addWidget(self.cityBox, 3,0)
+        self.contentGroup.addWidget(self.craftsBox, 4,0)
+        self.contentGroup.addWidget(self.docBox, 5,0)
+        self.contentGroup.addWidget(self.fashionBox, 6,0)
+        self.contentGroup.addWidget(self.flowersBox, 7,0)
+        self.contentGroup.addWidget(self.foodBox, 8, 0)
+        self.contentGroup.addWidget(self.gardenBox, 9, 0)
+        self.contentGroup.addWidget(self.holidaysBox, 10, 0)
+        self.contentGroup.addWidget(self.housesBox, 11, 0)
+        self.contentGroup.addWidget(self.landBox, 12, 0)
+        self.contentGroup.addWidget(self.nightBox, 13, 0)
+        self.contentGroup.addWidget(self.peopleBox, 0, 1)
+        self.contentGroup.addWidget(self.perfBox, 1, 1)
+        self.contentGroup.addWidget(self.petsBox, 2, 1)
+        self.contentGroup.addWidget(self.recBox, 3, 1)
+        self.contentGroup.addWidget(self.screenBox, 4, 1)
+        self.contentGroup.addWidget(self.selBox, 5, 1)
+        self.contentGroup.addWidget(self.sportBox, 6, 1)
+        self.contentGroup.addWidget(self.travelBox, 7, 1)
+        self.contentGroup.addWidget(self.utilityBox, 8, 1)
+        self.contentGroup.addWidget(self.weddingBox, 9, 1)
+        self.contentGroup.addWidget(self.whiteBoards, 10, 1)
+        
+        # Configuring Footer
+        self.footer = QtWidgets.QHBoxLayout()
+        self.startButton = QtWidgets.QPushButton("Start")
+        self.heightBox = QtWidgets.QLineEdit("Height: ")
+        self.widthBox = QtWidgets.QLineEdit("Width: ") 
+        self.numLayersBox = QtWidgets.QLineEdit("Number of Layers: ")
+        self.spacingBox = QtWidgets.QLineEdit("Spacing: ")
+        sampleStartDate = QtCore.QDate(2023, 10, 18)
+        self.startDateBox = QtWidgets.QDateEdit(sampleStartDate) 
+        sampleEndDate = QtCore.QDate(2023, 11, 18)
+        self.endDateBox = QtWidgets.QDateEdit(sampleEndDate)
+        self.footer.addWidget(self.heightBox)
+        self.footer.addWidget(self.widthBox)
+        self.footer.addWidget(self.numLayersBox)
+        self.footer.addWidget(self.spacingBox)
+        self.footer.addWidget(self.startButton)
+
+        # Configuring Preview
+        self.imageDisplay = QtWidgets.QGraphicsView()
+        self.imagePreview = QtWidgets.QLabel()
+        self.imagePreview.setScaledContents(True)
+        self.imagePreview.setAlignment(QtCore.Qt.AlignCenter)
+        self.imagePreview.setPixmap(QtGui.QPixmap("test.jpg"))
+
+
+        # Configuring Layouts
+        self.layout.addLayout(self.toggleGroup,1,0)
+        self.layout.addLayout(self.contentGroup,2,0)
+        self.layout.addLayout(self.footer, 3, 0)
+        # self.setLayout(self.layout)
+
+        # Connecting buttons to function
+        self.credButton.clicked.connect(self.showFiles)
+        self.weightsToggler.stateChanged.connect(self.toggleWeights)
+        self.cropToggler.stateChanged.connect(self.toggleCrop)
+        self.searchForImages.stateChanged.connect(self.toggleSearchForImages)
+        self.removeBackImages.stateChanged.connect(self.toggleRemoveBackImages)
+
+    def showFiles(self):
+        fileDialog = QtWidgets.QFileDialog()
+        fileDialog.setNameFilter("Text files (*.txt);;All files (*)")
+        
+
+        if fileDialog.exec():
+            # Get the selected file name
+            selected_file = fileDialog.selectedFiles()
+            print(f'Selected File: {selected_file}')
+            if selected_file.split('.')[-1] == 'json':
+                print("Current Credentials are json files!")
+            else:
+                print("ERROR: Current Credentials are not json files!")
+                return
+            
+    def toggleWeights(self):
+        self.driver.weights = self.weightsToggler.isChecked()
+        # print("toggledWeights: ", self.driver.weights)
+    def toggleCrop(self):
+        self.driver.cropBoundingBoxes = self.cropToggler.isChecked()
+        # print("toggledCrop: ", self.driver.cropBoundingBoxes)
+
+    def toggleSearchForImages(self):
+        self.driver.searchForImages = self.searchForImages.isChecked()
+        # print("toggledSearchForImages: ", self.driver.searchForImages)
+
+    def toggleRemoveBackImages(self):
+        self.driver.removeBackImages = self.removeBackImages.isChecked()
+        # print("toggledSearchForImages: ", self.driver.removeBackImages)
+    def toggleAnimalBox(self):
+        self.driver.animals = self.animalBox.isChecked()
+
+    def toggleArtsBox(self):
+        self.driver.arts = self.artsBox.isChecked()
+
+    def toggleBirthdayBox(self):
+        self.driver.birthday = self.birthdayBox.isChecked()
+
+    def toggleCityBox(self):
+        self.driver.city = self.cityBox.isChecked()
+
+    def toggleCraftsBox(self):
+        self.driver.crafts = self.craftsBox.isChecked()
+
+    def toggleDocBox(self):
+        self.driver.doc = self.docBox.isChecked()
+
+    def toggleFashionBox(self):
+        self.driver.fashion = self.fashionBox.isChecked()
+
+    def toggleFlowersBox(self):
+        self.driver.flowers = self.flowersBox.isChecked()
+
+    def toggleFoodBox(self):
+        self.driver.food = self.foodBox.isChecked()
+
+    def toggleGardenBox(self):
+        self.driver.garden = self.gardenBox.isChecked()
+
+    def toggleHolidaysBox(self):
+        self.driver.holidays = self.holidaysBox.isChecked()
+
+    def toggleHousesBox(self):
+        self.driver.houses = self.housesBox.isChecked()
+
+    def toggleLandBox(self):
+        self.driver.landscapes = self.landBox.isChecked()
+
+    def toggleNightBox(self):
+        self.driver.night = self.nightBox.isChecked()
+        
+    def togglePeopleBox(self):
+        self.driver.people = self.peopleBox.isChecked()
+        
+    def togglePerfBox(self):
+        self.driver.performances = self.perfBox.isChecked()
+
+    def togglePetsBox(self):
+        self.driver.pets = self.petsBox.isChecked()
+
+    def toggleRecBox(self):
+        self.driver.receipts = self.recBox.isChecked()
+
+    def toggleScreenBox(self):
+        self.driver.screenshots = self.screenBox.isChecked()
+
+    def toggleSelBox(self):
+        self.driver.selfies = self.selBox.isChecked()
+
+    def toggleSportBox(self):
+        self.driver.sports = self.sportBox.isChecked()
+
+    def toggleTravelBox(self):
+        self.driver.travel = self.travelBox.isChecked()
+
+    def toggleUtilityBox(self):
+        self.driver.utility = self.utilityBox.isChecked()
+        
+    def toggleWeddingBox(self):
+        self.driver.weddings = self.weddingBox.isChecked()
+
+    def toggleWhiteBoards(self):
+        self.driver.whiteBoards = self.whiteBoards.isChecked()
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    ui = MainWindow()
+    ui.resize(800, 600)
+    ui.show()
+
+    sys.exit(app.exec())
