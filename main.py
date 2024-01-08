@@ -17,7 +17,7 @@ class mainDriver():
 
         self.dateFilter = {
             "startDate": {"year": self.startDate[0], "month": self.startDate[1], "day": self.startDate[2]},
-            "endDate": {"year": 2023, "month": 11, "day": 18}
+            "endDate": {"year": self.endDate[0], "month": self.endDate[1], "day": self.endDate[2]}
         }
 
         self.contentFilter = {
@@ -32,15 +32,42 @@ class mainDriver():
             ]
         } 
 
-        # STATES
+        # Main States
         self.weights = False
         self.cropBoundingBoxes = True
         self.searchForImages = False
         self.removeBackImages = False
-
+        # Content Filter States
+        self.animals = False
+        self.arts = False
+        self.birthday = False
+        self.city = False
+        self.crafts = False
+        self.doc = False
+        self.fashion = False
+        self.flowers = False
+        self.food = False
+        self.garden = False
+        self.holidays = False
+        self.houses = False
+        self.landscapes = False
+        self.night = False
+        self.people = False
+        self.performances = False
+        self.pets = False
+        self.receipts = False
+        self.screenshots = False
+        self.selfies = False
+        self.sports = False
+        self.travel = False
+        self.utility = False
+        self.weddings = False
+        self.whiteBoards = False
+        self.startButton = False
         self.imageDir = 'out'
 
         if self.searchForImages:
+
             GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.contentFilter, layeredSearch=True)
 
         if self.removeBackImages:

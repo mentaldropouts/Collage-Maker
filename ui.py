@@ -2,6 +2,9 @@ import sys
 import random
 from PySide6 import QtCore, QtWidgets, QtGui
 from main import mainDriver
+from Gdriver import GoogleDriver
+from remover import RemoveDriver
+from collage import CollageDriver
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -113,12 +116,38 @@ class MainWindow(QtWidgets.QWidget):
         self.cropToggler.stateChanged.connect(self.toggleCrop)
         self.searchForImages.stateChanged.connect(self.toggleSearchForImages)
         self.removeBackImages.stateChanged.connect(self.toggleRemoveBackImages)
+        self.animalBox.stateChanged.connect(self.toggleAnimalBox)
+        self.artsBox.stateChanged.connect(self.toggleArtsBox)
+        self.birthdayBox.stateChanged.connect(self.toggleBirthdayBox)
+        self.cityBox.stateChanged.connect(self.toggleCityBox)
+        self.craftsBox.stateChanged.connect(self.toggleCraftsBox)
+        self.docBox.stateChanged.connect(self.toggleDocBox)
+        self.fashionBox.stateChanged.connect(self.toggleFashionBox)
+        self.flowersBox.stateChanged.connect(self.toggleFlowersBox)
+        self.foodBox.stateChanged.connect(self.toggleFoodBox)
+        self.gardenBox.stateChanged.connect(self.toggleGardenBox)
+        self.holidaysBox.stateChanged.connect(self.toggleHolidaysBox)
+        self.housesBox.stateChanged.connect(self.toggleHousesBox)
+        self.landBox.stateChanged.connect(self.toggleLandBox)
+        self.nightBox.stateChanged.connect(self.toggleNightBox)
+        self.peopleBox.stateChanged.connect(self.togglePeopleBox)
+        self.perfBox.stateChanged.connect(self.togglePerfBox)
+        self.petsBox.stateChanged.connect(self.togglePetsBox)
+        self.recBox.stateChanged.connect(self.toggleRecBox)
+        self.screenBox.stateChanged.connect(self.toggleScreenBox)
+        self.selBox.stateChanged.connect(self.toggleSelBox)
+        self.sportBox.stateChanged.connect(self.toggleSportBox)
+        self.travelBox.stateChanged.connect(self.toggleTravelBox)
+        self.utilityBox.stateChanged.connect(self.toggleUtilityBox)
+        self.weddingBox.stateChanged.connect(self.toggleWeddingBox)
+        self.whiteBoards.stateChanged.connect(self.toggleWhiteBoards)
+        self.startButton.clicked.connect(self.toggleStartButton)
+        
 
+    # Functionality that is called when the choose credentials button is clicked
     def showFiles(self):
         fileDialog = QtWidgets.QFileDialog()
         fileDialog.setNameFilter("Text files (*.txt);;All files (*)")
-        
-
         if fileDialog.exec():
             # Get the selected file name
             selected_file = fileDialog.selectedFiles()
@@ -129,20 +158,34 @@ class MainWindow(QtWidgets.QWidget):
                 print("ERROR: Current Credentials are not json files!")
                 return
             
+    # Functionally that is called when the start button is clicked
+    def start(self):
+        if self.driver.startButton:
+            if self.driver.searchForImages:
+                GoogleDriver(dateFilter=self.driver.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
+            if self.driver.removeBackImages:
+                 RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
+            # Creates the collage      
+            CollageDriver(height=self.driver.height, width=self.driver.width, 
+                          numLayers=self.driver.numLayers, spacing=self.driver.spacing,
+                          useWeights=self.driver.weights)
+            print("Finished Collage Driver!")
+
     def toggleWeights(self):
         self.driver.weights = self.weightsToggler.isChecked()
-        # print("toggledWeights: ", self.driver.weights)
+        print("toggledWeights: ", self.driver.weights)
     def toggleCrop(self):
         self.driver.cropBoundingBoxes = self.cropToggler.isChecked()
-        # print("toggledCrop: ", self.driver.cropBoundingBoxes)
+        print("toggledCrop: ", self.driver.cropBoundingBoxes)
 
     def toggleSearchForImages(self):
         self.driver.searchForImages = self.searchForImages.isChecked()
-        # print("toggledSearchForImages: ", self.driver.searchForImages)
+        print("toggledSearchForImages: ", self.driver.searchForImages)
 
     def toggleRemoveBackImages(self):
         self.driver.removeBackImages = self.removeBackImages.isChecked()
-        # print("toggledSearchForImages: ", self.driver.removeBackImages)
+        print("toggledSearchForImages: ", self.driver.removeBackImages)
+
     def toggleAnimalBox(self):
         self.driver.animals = self.animalBox.isChecked()
 
@@ -151,6 +194,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def toggleBirthdayBox(self):
         self.driver.birthday = self.birthdayBox.isChecked()
+        print("toggledBirthdayBox: ", self.driver.birthday)
 
     def toggleCityBox(self):
         self.driver.city = self.cityBox.isChecked()
@@ -184,7 +228,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def toggleNightBox(self):
         self.driver.night = self.nightBox.isChecked()
-        
+
     def togglePeopleBox(self):
         self.driver.people = self.peopleBox.isChecked()
         
@@ -217,6 +261,12 @@ class MainWindow(QtWidgets.QWidget):
 
     def toggleWhiteBoards(self):
         self.driver.whiteBoards = self.whiteBoards.isChecked()
+
+    def toggleStartButton(self):
+        self.driver.startButton = True
+        print("toggledStarButton: ", self.driver.startButton)
+        self.start()
+        self.driver.startButton = FalsestartButton = False
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
