@@ -28,6 +28,7 @@ class PhotoSearch:
         creds = None
 
         if os.path.exists('_secrets_/token.json'):
+            print("Loading credentials from file")
             creds = Credentials.from_authorized_user_file('_secrets_/token.json', self.scopes)
 
         if not creds or not creds.valid:
@@ -135,9 +136,6 @@ class PhotoSearch:
 
         print("Images saved to 'out' directory.")
 
-
-
-
 ######################################################################
 # Purpose: Deleting the weights.json file since you are getting news
 # iamges from Photos 
@@ -171,25 +169,23 @@ class PhotoSearch:
                     print(dir)
                     dir_path = os.path.join(root, dir)
                     os.rmdir(dir_path)
-            
             # Remove the top-level directory
             os.rmdir(folderName)
+            if os.path.exists(folderName):
+                print(f"Folder '{folderName}' was not deletedc.")
             print(f"Folder '{folderName}' deleted successfully.")
         except Exception as e:
             print(f"An error occurred while deleting the folder: {e}")
                 
 def GoogleDriver(dateFilter, contentFilter, layeredSearch=False):
-    print("Entering GoogleDriver")
     instance = PhotoSearch()
     instance.delete_json_file('weights.json')
+    instance.delete_folders('out')
+    instance.delete_folders('result')
     # LayeredSearch determines if there are multiple searches with different
     # content filters. Since you would want to keep the old searches results 
     # you wouldn't clear them.
-    if layeredSearch == False:
-        if os.path.exists('result'):
-            instance.delete_folders('result')
-        if os.path.exists('out'):
-            instance.delete_folders('out')
-
+ 
+    print("Setting up GoogleDriver")
     instance.setup(dateFilter, contentFilter)
-    
+    print("Leaving GoogleDriver")

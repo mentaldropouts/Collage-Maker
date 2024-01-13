@@ -5,13 +5,13 @@ from main import mainDriver
 from Gdriver import GoogleDriver
 from remover import RemoveDriver
 from collage import CollageDriver
+import os
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.driver = mainDriver()
         self.layout = QtWidgets.QGridLayout(self)
-        
         self.credButton = QtWidgets.QPushButton("Choose Credentials")
         self.layout.addWidget(self.credButton, 0,0, 1,1)
 
@@ -22,9 +22,9 @@ class MainWindow(QtWidgets.QWidget):
         self.searchForImages = QtWidgets.QCheckBox("Search For Images")
         self.removeBackImages = QtWidgets.QCheckBox("Remove Back Images")
         self.toggleGroup.addWidget(self.searchForImages, 0,0)
-        self.toggleGroup.addWidget(self.removeBackImages, 0,1)
-        self.toggleGroup.addWidget(self.weightsToggler, 1,0)
-        self.toggleGroup.addWidget(self.cropToggler, 1,1)
+        # self.toggleGroup.addWidget(self.removeBackImages, 0,1)
+        # self.toggleGroup.addWidget(self.weightsToggler, 1,0)
+        # self.toggleGroup.addWidget(self.cropToggler, 1,1)
 
         # Configuring Content Group
         self.contentGroup = QtWidgets.QGridLayout()
@@ -53,48 +53,64 @@ class MainWindow(QtWidgets.QWidget):
         self.utilityBox = QtWidgets.QCheckBox("UTILITY")
         self.weddingBox = QtWidgets.QCheckBox("WEDDINGS")
         self.whiteBoards = QtWidgets.QCheckBox("WHITEBOARDS")
-        self.contentGroup.addWidget(self.animalBox, 0,0)
-        self.contentGroup.addWidget(self.artsBox, 1,0)
-        self.contentGroup.addWidget(self.birthdayBox, 2,0)
-        self.contentGroup.addWidget(self.cityBox, 3,0)
-        self.contentGroup.addWidget(self.craftsBox, 4,0)
-        self.contentGroup.addWidget(self.docBox, 5,0)
-        self.contentGroup.addWidget(self.fashionBox, 6,0)
-        self.contentGroup.addWidget(self.flowersBox, 7,0)
-        self.contentGroup.addWidget(self.foodBox, 8, 0)
-        self.contentGroup.addWidget(self.gardenBox, 9, 0)
-        self.contentGroup.addWidget(self.holidaysBox, 10, 0)
-        self.contentGroup.addWidget(self.housesBox, 11, 0)
-        self.contentGroup.addWidget(self.landBox, 12, 0)
-        self.contentGroup.addWidget(self.nightBox, 13, 0)
-        self.contentGroup.addWidget(self.peopleBox, 0, 1)
-        self.contentGroup.addWidget(self.perfBox, 1, 1)
-        self.contentGroup.addWidget(self.petsBox, 2, 1)
-        self.contentGroup.addWidget(self.recBox, 3, 1)
-        self.contentGroup.addWidget(self.screenBox, 4, 1)
-        self.contentGroup.addWidget(self.selBox, 5, 1)
-        self.contentGroup.addWidget(self.sportBox, 6, 1)
-        self.contentGroup.addWidget(self.travelBox, 7, 1)
-        self.contentGroup.addWidget(self.utilityBox, 8, 1)
-        self.contentGroup.addWidget(self.weddingBox, 9, 1)
-        self.contentGroup.addWidget(self.whiteBoards, 10, 1)
+        # FUNCTIONALITY HAS NOT BEEN FINISHED FOR THESE FUNCTIONS 
+        # self.contentGroup.addWidget(self.animalBox, 0,0)
+        # self.contentGroup.addWidget(self.artsBox, 1,0)
+        # self.contentGroup.addWidget(self.birthdayBox, 2,0)
+        # self.contentGroup.addWidget(self.cityBox, 3,0)
+        # self.contentGroup.addWidget(self.craftsBox, 4,0)
+        # self.contentGroup.addWidget(self.docBox, 5,0)
+        # self.contentGroup.addWidget(self.fashionBox, 6,0)
+        # self.contentGroup.addWidget(self.flowersBox, 7,0)
+        # self.contentGroup.addWidget(self.foodBox, 8, 0)
+        # self.contentGroup.addWidget(self.gardenBox, 9, 0)
+        # self.contentGroup.addWidget(self.holidaysBox, 10, 0)
+        # self.contentGroup.addWidget(self.housesBox, 11, 0)
+        # self.contentGroup.addWidget(self.landBox, 12, 0)
+        # self.contentGroup.addWidget(self.nightBox, 13, 0)
+        # self.contentGroup.addWidget(self.peopleBox, 0, 1)
+        # self.contentGroup.addWidget(self.perfBox, 1, 1)
+        # self.contentGroup.addWidget(self.petsBox, 2, 1)
+        # self.contentGroup.addWidget(self.recBox, 3, 1)
+        # self.contentGroup.addWidget(self.screenBox, 4, 1)
+        # self.contentGroup.addWidget(self.selBox, 5, 1)
+        # self.contentGroup.addWidget(self.sportBox, 6, 1)
+        # self.contentGroup.addWidget(self.travelBox, 7, 1)
+        # self.contentGroup.addWidget(self.utilityBox, 8, 1)
+        # self.contentGroup.addWidget(self.weddingBox, 9, 1)
+        # self.contentGroup.addWidget(self.whiteBoards, 10, 1)
         
         # Configuring Footer
+        self.dateBar = QtWidgets.QHBoxLayout()
         self.footer = QtWidgets.QHBoxLayout()
         self.startButton = QtWidgets.QPushButton("Start")
-        self.heightBox = QtWidgets.QLineEdit("Height: ")
-        self.widthBox = QtWidgets.QLineEdit("Width: ") 
-        self.numLayersBox = QtWidgets.QLineEdit("Number of Layers: ")
-        self.spacingBox = QtWidgets.QLineEdit("Spacing: ")
+        self.heightBox = QtWidgets.QLineEdit("")
+        heightText = QtWidgets.QLabel("Height:")
+        self.widthBox = QtWidgets.QLineEdit("") 
+        widthText = QtWidgets.QLabel("Width:")
+        self.numLayersBox = QtWidgets.QLineEdit("")
+        numLayersText = QtWidgets.QLabel("Number of Layers:")
+        self.spacingBox = QtWidgets.QLineEdit("")
+        spacingText = QtWidgets.QLabel("Spacing:")
+        startDateText = QtWidgets.QLabel("Start Date:")
         sampleStartDate = QtCore.QDate(2023, 10, 18)
         self.startDateBox = QtWidgets.QDateEdit(sampleStartDate) 
         sampleEndDate = QtCore.QDate(2023, 11, 18)
+        endDateText = QtWidgets.QLabel("End Date:")
         self.endDateBox = QtWidgets.QDateEdit(sampleEndDate)
+        self.footer.addWidget(heightText)
         self.footer.addWidget(self.heightBox)
+        self.footer.addWidget(widthText)
         self.footer.addWidget(self.widthBox)
+        self.footer.addWidget(numLayersText)
         self.footer.addWidget(self.numLayersBox)
+        self.footer.addWidget(spacingText)
         self.footer.addWidget(self.spacingBox)
         self.footer.addWidget(self.startButton)
+        self.dateBar.addWidget(startDateText)
+        self.dateBar.addWidget(self.startDateBox)
+        self.dateBar.addWidget(endDateText)
+        self.dateBar.addWidget(self.endDateBox)
 
         # Configuring Preview
         self.imageDisplay = QtWidgets.QGraphicsView()
@@ -103,15 +119,19 @@ class MainWindow(QtWidgets.QWidget):
         self.imagePreview.setAlignment(QtCore.Qt.AlignCenter)
         self.imagePreview.setPixmap(QtGui.QPixmap("test.jpg"))
 
-
         # Configuring Layouts
         self.layout.addLayout(self.toggleGroup,1,0)
         self.layout.addLayout(self.contentGroup,2,0)
-        self.layout.addLayout(self.footer, 3, 0)
+        self.layout.addLayout(self.dateBar, 3, 0)
+        self.layout.addLayout(self.footer, 4, 0)
         # self.setLayout(self.layout)
 
         # Connecting buttons to function
         self.credButton.clicked.connect(self.showFiles)
+        self.heightBox.textChanged.connect(self.handleChangeinHeight)
+        self.widthBox.textChanged.connect(self.handleChangeinWidth)
+        self.numLayersBox.textChanged.connect(self.handleChangeinNumLayers)
+        self.spacingBox.textChanged.connect(self.handleChangeinSpacing)
         self.weightsToggler.stateChanged.connect(self.toggleWeights)
         self.cropToggler.stateChanged.connect(self.toggleCrop)
         self.searchForImages.stateChanged.connect(self.toggleSearchForImages)
@@ -130,7 +150,7 @@ class MainWindow(QtWidgets.QWidget):
         self.housesBox.stateChanged.connect(self.toggleHousesBox)
         self.landBox.stateChanged.connect(self.toggleLandBox)
         self.nightBox.stateChanged.connect(self.toggleNightBox)
-        self.peopleBox.stateChanged.connect(self.togglePeopleBox)
+
         self.perfBox.stateChanged.connect(self.togglePerfBox)
         self.petsBox.stateChanged.connect(self.togglePetsBox)
         self.recBox.stateChanged.connect(self.toggleRecBox)
@@ -142,6 +162,9 @@ class MainWindow(QtWidgets.QWidget):
         self.weddingBox.stateChanged.connect(self.toggleWeddingBox)
         self.whiteBoards.stateChanged.connect(self.toggleWhiteBoards)
         self.startButton.clicked.connect(self.toggleStartButton)
+        self.startDateBox.dateChanged.connect(self.updateDate)
+        self.endDateBox.dateChanged.connect(self.updateDate)
+
         
 
     # Functionality that is called when the choose credentials button is clicked
@@ -157,14 +180,28 @@ class MainWindow(QtWidgets.QWidget):
             else:
                 print("ERROR: Current Credentials are not json files!")
                 return
+    # Functionality that handles date chages
+    def updateDate(self):
+            self.startDate = [self.startDateBox.date().year(), self.startDateBox.date().month(), self.startDateBox.date().day()]
+            self.endDate = [self.endDateBox.date().year(), self.endDateBox.date().month(), self.endDateBox.date().day()]
+
+            self.dateFilter = {
+                "startDate": {"year": self.startDate[0], "month": self.startDate[1], "day": self.startDate[2]},
+                "endDate": {"year": self.endDate[0], "month": self.endDate[1], "day": self.endDate[2]}
+            }
+            print("start:", self.startDate)
+            print("end:", self.endDate)
+
             
-    # Functionally that is called when the start button is clicked
+    # Functionality that is called when the start button is clicked
     def start(self):
+        print("starting")
         if self.driver.startButton:
             if self.driver.searchForImages:
-                GoogleDriver(dateFilter=self.driver.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
-            if self.driver.removeBackImages:
-                 RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
+                print("Data Filter =", self.dateFilter)
+                GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
+            # if self.driver.removeBackImages:
+            RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
             # Creates the collage      
             CollageDriver(height=self.driver.height, width=self.driver.width, 
                           numLayers=self.driver.numLayers, spacing=self.driver.spacing,
@@ -268,10 +305,23 @@ class MainWindow(QtWidgets.QWidget):
         self.start()
         self.driver.startButton = FalsestartButton = False
 
+    def handleChangeinHeight(self):
+        print("Height is now", self.driver.height)
+        self.driver.height = int(self.heightBox.text())
+
+    def handleChangeinWidth(self):
+        self.driver.width = int(self.widthBox.text())
+
+    def handleChangeinNumLayers(self):
+        self.driver.numLayers = int(self.numLayersBox.text())
+
+    def handleChangeinSpacing(self):
+        self.driver.spacing = int(self.spacingBox.text())
+
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     ui = MainWindow()
-    ui.resize(800, 600)
     ui.show()
 
     sys.exit(app.exec())

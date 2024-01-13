@@ -2,7 +2,6 @@ from Gdriver import GoogleDriver
 from remover import RemoveDriver
 from collage import CollageDriver
 from tkinter import *
-from tkinter import ttk
 
 
 class mainDriver():
@@ -36,7 +35,7 @@ class mainDriver():
         self.weights = False
         self.cropBoundingBoxes = True
         self.searchForImages = False
-        self.removeBackImages = False
+        self.removeBackImages = True
         # Content Filter States
         self.animals = False
         self.arts = False
@@ -65,15 +64,3 @@ class mainDriver():
         self.whiteBoards = False
         self.startButton = False
         self.imageDir = 'out'
-
-        if self.searchForImages:
-
-            GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.contentFilter, layeredSearch=True)
-
-        if self.removeBackImages:
-            # Removes these fil es background
-            RemoveDriver(dir=self.imageDir,typeOfImages="person", useWeights=self.weights, crop=self.cropBoundingBoxes)
-            RemoveDriver(dir=self.imageDir, typeOfImages="anime", useWeights=self.weights, crop=self.cropBoundingBoxes)
-
-        # Makes them into a collage
-        # CollageDriver(height=self.height, width=self.width, numLayers=self.numLayers, useWeights=self.weights, spacing=self.spacing)

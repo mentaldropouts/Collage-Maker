@@ -154,6 +154,7 @@ def CollageDriver(height, width, numLayers, useWeights, spacing):
     boundingBox = result.getbbox()
     result = result.crop(boundingBox)
     result.save('test.png')
+    result.show('test.png')
 
 # LOCALIZED TESTING 
 # print("Entering CollageDriver")
