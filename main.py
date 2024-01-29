@@ -7,7 +7,7 @@ from tkinter import *
 class mainDriver():
     def __init__(self) -> None:
         self.height = 1000
-        self.width = 1000  
+        self.width = 1000
         self.numLayers = 3
         self.spacing = 10
         self.startDate = [2023, 10, 18]    
@@ -37,6 +37,7 @@ class mainDriver():
         self.searchForImages = False
         self.searchPinterest = False
         self.removeBackImages = True
+        
         # Content Filter States
         self.animals = False
         self.arts = False

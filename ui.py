@@ -12,29 +12,67 @@ import os
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        # Initial States
+        self.pinKey = "People"
+        self.numImages = 50
+        sampleStartDate = QtCore.QDate(2023, 10, 18)
+        sampleEndDate = QtCore.QDate(2023, 11, 18)
+
+
         self.driver = mainDriver()
         self.layout = QtWidgets.QGridLayout(self)
-        self.credButton = QtWidgets.QPushButton("Choose Google Credentials")
-        self.layout.addWidget(self.credButton, 0,0, 1,1)
+        # self.credButton = QtWidgets.QPushButton("Choose Google Credentials")
+        # self.layout.addWidget(self.credButton, 0,0, 1,1)
 
         # Configuring Toggle Group 
-        self.toggleGroup = QtWidgets.QGridLayout()
-        self.weightsToggler = QtWidgets.QCheckBox("Use Weights")
-        self.cropToggler = QtWidgets.QCheckBox("Crop Bounding Boxes")
+        # self.toggleGroup = QtWidgets.QGridLayout()
+        # self.weightsToggler = QtWidgets.QCheckBox("Use Weights")
+        # self.cropToggler = QtWidgets.QCheckBox("Crop Bounding Boxes")
+        self.titleLayout = QtWidgets.QHBoxLayout()
+        self.title = QtWidgets.QLabel("Collage Maker")
         self.loadedLabel = QtWidgets.QLabel("None")
-        self.clearButton = QtWidgets.QPushButton("clear")
+        self.titleLayout.addWidget(self.title)
+        self.titleLayout.addWidget(self.loadedLabel)
+
+        self.googleLayout = QtWidgets.QGridLayout()
+        self.googleLayout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         self.searchGoogle = QtWidgets.QCheckBox("Search Google Photos")
+        startDateText = QtWidgets.QLabel("Start Date:")
+        endDateText = QtWidgets.QLabel("End Date:")
+        self.endDateBox = QtWidgets.QDateEdit(sampleEndDate)
+        self.startDateBox = QtWidgets.QDateEdit(sampleStartDate) 
+        # Adding items to Google Layout
+        
+        self.googleLayout.addWidget(self.searchGoogle,0,0)
+        self.googleLayout.addWidget(startDateText,1,0)
+        self.googleLayout.addWidget(self.startDateBox,1,1)
+        self.googleLayout.addWidget(endDateText,2,0)
+        self.googleLayout.addWidget(self.endDateBox,2,1)
+
+        
+        self.clearButton = QtWidgets.QPushButton("clear")
+        self.pinterestLayout = QtWidgets.QGridLayout()
         self.searchPinterest = QtWidgets.QCheckBox("Search Pinterest")
         KeywordText = QtWidgets.QLabel("Keyword:")
-        self.pinKeyword = QtWidgets.QLineEdit("people") 
-        self.removeBackImages = QtWidgets.QCheckBox("Remove Back Images")
+        self.pinKeyword = QtWidgets.QLineEdit("People")
+        numImagesText = QtWidgets.QLabel("Number of Images:")
+        self.numImagesBox = QtWidgets.QComboBox(self)
+        # Making combo box for number of images
+        for i in range(10, 201, 10):
+            self.numImagesBox.addItem(str(i))
 
-        self.toggleGroup.addWidget(self.searchGoogle, 0,0)
-        self.toggleGroup.addWidget(self.searchPinterest, 0,1)
-        self.toggleGroup.addWidget(KeywordText, 0,2)
-        self.toggleGroup.addWidget(self.pinKeyword,0,3)
-        self.toggleGroup.addWidget(self.loadedLabel,0,4)
-        # self.toggleGroup.addWidget(self.clearButton,0,3)
+        # Adding items to the Pinterest Layout
+        self.pinterestLayout.addWidget(self.searchPinterest,0,0)
+        self.pinterestLayout.addWidget(KeywordText,1,0)
+        self.pinterestLayout.addWidget(self.pinKeyword)
+        self.pinterestLayout.addWidget(numImagesText)
+        self.pinterestLayout.addWidget(self.numImagesBox)
+        self.removeBackImages = QtWidgets.QCheckBox("Remove Back Images")
+        # self.toggleGroup.addWidget(self.searchPinterest, 0,1)
+        # self.toggleGroup.addWidget(KeywordText, 0,2)
+        # self.toggleGroup.addWidget(self.pinKeyword,0,3)
+        # self.toggleGroup.addWidget(self.loadedLabel,0,4)
+
         self.loadedIndicater()
 
         # self.toggleGroup.addWidget(self.removeBackImages, 0,1)
@@ -68,6 +106,7 @@ class MainWindow(QtWidgets.QWidget):
         self.utilityBox = QtWidgets.QCheckBox("UTILITY")
         self.weddingBox = QtWidgets.QCheckBox("WEDDINGS")
         self.whiteBoards = QtWidgets.QCheckBox("WHITEBOARDS")
+
         # FUNCTIONALITY HAS NOT BEEN FINISHED FOR THESE FUNCTIONS 
         # self.contentGroup.addWidget(self.animalBox, 0,0)
         # self.contentGroup.addWidget(self.artsBox, 1,0)
@@ -96,7 +135,6 @@ class MainWindow(QtWidgets.QWidget):
         # self.contentGroup.addWidget(self.whiteBoards, 10, 1)
         
         # Configuring Footer
-        self.dateBar = QtWidgets.QHBoxLayout()
         self.footer = QtWidgets.QHBoxLayout()
         self.startButton = QtWidgets.QPushButton("Start")
         self.heightBox = QtWidgets.QLineEdit("1000")
@@ -107,12 +145,7 @@ class MainWindow(QtWidgets.QWidget):
         numLayersText = QtWidgets.QLabel("Number of Layers:")
         self.spacingBox = QtWidgets.QLineEdit("10")
         spacingText = QtWidgets.QLabel("Spacing:")
-        startDateText = QtWidgets.QLabel("Start Date:")
-        sampleStartDate = QtCore.QDate(2023, 10, 18)
-        self.startDateBox = QtWidgets.QDateEdit(sampleStartDate) 
-        sampleEndDate = QtCore.QDate(2023, 11, 18)
-        endDateText = QtWidgets.QLabel("End Date:")
-        self.endDateBox = QtWidgets.QDateEdit(sampleEndDate)
+        
         self.footer.addWidget(heightText)
         self.footer.addWidget(self.heightBox)
         self.footer.addWidget(widthText)
@@ -122,10 +155,6 @@ class MainWindow(QtWidgets.QWidget):
         self.footer.addWidget(spacingText)
         self.footer.addWidget(self.spacingBox)
         self.footer.addWidget(self.startButton)
-        self.dateBar.addWidget(startDateText)
-        self.dateBar.addWidget(self.startDateBox)
-        self.dateBar.addWidget(endDateText)
-        self.dateBar.addWidget(self.endDateBox)
 
         # Configuring Preview
         self.imageDisplay = QtWidgets.QGraphicsView()
@@ -135,20 +164,21 @@ class MainWindow(QtWidgets.QWidget):
         self.imagePreview.setPixmap(QtGui.QPixmap("test.jpg"))
 
         # Configuring Layouts
-        self.layout.addLayout(self.toggleGroup,1,0)
-        self.layout.addLayout(self.contentGroup,2,0)
-        self.layout.addLayout(self.dateBar, 3, 0)
-        self.layout.addLayout(self.footer, 4, 0)
-        # self.setLayout(self.layout)
+        self.layout.addLayout(self.titleLayout,0,0)
+        self.BodyLayout = QtWidgets.QHBoxLayout()
+        self.BodyLayout.addLayout(self.googleLayout)
+        self.BodyLayout.addLayout(self.pinterestLayout)
+        self.layout.addLayout(self.BodyLayout,1,0)
+        self.layout.addLayout(self.footer, 4, 0, QtCore.Qt.AlignCenter)
 
         # Connecting buttons to function
-        self.credButton.clicked.connect(self.showFiles)
+        # self.credButton.clicked.connect(self.showFiles)
         self.heightBox.textChanged.connect(self.handleChangeinHeight)
         self.widthBox.textChanged.connect(self.handleChangeinWidth)
         self.numLayersBox.textChanged.connect(self.handleChangeinNumLayers)
         self.spacingBox.textChanged.connect(self.handleChangeinSpacing)
-        self.weightsToggler.stateChanged.connect(self.toggleWeights)
-        self.cropToggler.stateChanged.connect(self.toggleCrop)
+        # self.weightsToggler.stateChanged.connect(self.toggleWeights)
+        # self.cropToggler.stateChanged.connect(self.toggleCrop)
         self.searchGoogle.stateChanged.connect(self.toggleSearchGoogle)
         self.searchPinterest.stateChanged.connect(self.toggleSearchPinterest)
         self.removeBackImages.stateChanged.connect(self.toggleRemoveBackImages)
@@ -181,23 +211,21 @@ class MainWindow(QtWidgets.QWidget):
         self.startDateBox.dateChanged.connect(self.updateDate)
         self.endDateBox.dateChanged.connect(self.updateDate)
         self.pinKeyword.textChanged.connect(self.updateKey)
-
-
-        
+        self.numImagesBox.currentIndexChanged.connect(self.updateNumImages)
 
     # Functionality that is called when the choose credentials button is clicked
-    def showFiles(self):
-        fileDialog = QtWidgets.QFileDialog()
-        fileDialog.setNameFilter("Text files (*.txt);;All files (*)")
-        if fileDialog.exec():
-            # Get the selected file name
-            selected_file = fileDialog.selectedFiles()
-            print(f'Selected File: {selected_file}')
-            if selected_file.split('.')[-1] == 'json':
-                print("Current Credentials are json files!")
-            else:
-                print("ERROR: Current Credentials are not json files!")
-                return
+    # def showFiles(self):
+    #     fileDialog = QtWidgets.QFileDialog()
+    #     fileDialog.setNameFilter("Text files (*.txt);;All files (*)")
+    #     if fileDialog.exec():
+    #         # Get the selected file name
+    #         selected_file = fileDialog.selectedFiles()
+    #         print(f'Selected File: {selected_file}')
+    #         if selected_file.split('.')[-1] == 'json':
+    #             print("Current Credentials are json files!")
+    #         else:
+    #             print("ERROR: Current Credentials are not json files!")
+    #             return
             
     # Functionality that handles date chages
     def updateDate(self):
@@ -215,6 +243,11 @@ class MainWindow(QtWidgets.QWidget):
         self.pinKey = self.pinKeyword.text()
         print("PinKey = ", self.pinKey)
 
+    # Getting the number of images for pinterest to search
+    def updateNumImages(self):
+        self.numImages = int(self.numImagesBox.currentText())
+        print("Looking for ", self.numImages, " on Pinterest")
+
     # Functionality updates the indicator for loaded pictures
     def loadedIndicater(self):
         if os.path.exists('out'):
@@ -231,17 +264,25 @@ class MainWindow(QtWidgets.QWidget):
         if self.driver.startButton:
             if self.driver.searchForImages:
                 print("Data Filter =", self.dateFilter)
+
                 GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
+                self.loadedLabel.setText("Loading Google")
+                self.loadedLabel.setStyleSheet("background-color: yellow;")
+                RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
+
             # if self.driver.removeBackImages:
             if self.driver.searchPinterest:
-                PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=15)
-            
-            RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
+                PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=self.numImages)
+                self.loadedLabel.setText("Loading Pinterest")
+                self.loadedLabel.setStyleSheet("background-color: yellow;")
+                RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
             # Creates the collage      
             CollageDriver(height=self.driver.height, width=self.driver.width, 
                           numLayers=self.driver.numLayers, spacing=self.driver.spacing,
                           useWeights=self.driver.weights)
             print("Finished Collage Driver!")
+            self.loadedLabel.setText("Loaded")
+            self.loadedLabel.setStyleSheet("background-color: green;")
 
     def toggleWeights(self):
         self.driver.weights = self.weightsToggler.isChecked()

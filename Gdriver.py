@@ -182,6 +182,7 @@ def GoogleDriver(dateFilter, contentFilter, layeredSearch=False):
     instance.delete_json_file('weights.json')
     instance.delete_folders('out')
     instance.delete_folders('result')
+    
     # LayeredSearch determines if there are multiple searches with different
     # content filters. Since you would want to keep the old searches results 
     # you wouldn't clear them.

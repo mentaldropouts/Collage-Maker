@@ -69,7 +69,8 @@ class NewCollage:
                 image = Image.open(imageFile)
                 
                 # Calculate target dimensions based on aspect ratio
-                aspect_ratio = image.width / image.height
+                aspect_ratio = abs(image.width / image.height)
+                # print(aspect_ratio)
                 if aspect_ratio > 1:  # Landscape image
                     self.target_width = max_width // self.num_rows
                     self.target_height = int(self.target_width / aspect_ratio)
@@ -158,7 +159,7 @@ def CollageDriver(height, width, numLayers, useWeights, spacing):
 
 # LOCALIZED TESTING 
 # print("Entering CollageDriver")
-# collage = NewCollage(2000,2000,"result/person", 3)
+# collage = NewCollage(500,500,"result/", 24)
 # collage.walk()
 # collage.openImages()
 # spacing = 10
