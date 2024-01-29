@@ -2,7 +2,9 @@ import sys
 import random
 from PySide6 import QtCore, QtWidgets, QtGui
 from main import mainDriver
+
 from Gdriver import GoogleDriver
+from PDriver import PinterestDriver
 from remover import RemoveDriver
 from collage import CollageDriver
 import os
@@ -12,16 +14,29 @@ class MainWindow(QtWidgets.QWidget):
         super().__init__()
         self.driver = mainDriver()
         self.layout = QtWidgets.QGridLayout(self)
-        self.credButton = QtWidgets.QPushButton("Choose Credentials")
+        self.credButton = QtWidgets.QPushButton("Choose Google Credentials")
         self.layout.addWidget(self.credButton, 0,0, 1,1)
 
         # Configuring Toggle Group 
         self.toggleGroup = QtWidgets.QGridLayout()
         self.weightsToggler = QtWidgets.QCheckBox("Use Weights")
         self.cropToggler = QtWidgets.QCheckBox("Crop Bounding Boxes")
-        self.searchForImages = QtWidgets.QCheckBox("Search For Images")
+        self.loadedLabel = QtWidgets.QLabel("None")
+        self.clearButton = QtWidgets.QPushButton("clear")
+        self.searchGoogle = QtWidgets.QCheckBox("Search Google Photos")
+        self.searchPinterest = QtWidgets.QCheckBox("Search Pinterest")
+        KeywordText = QtWidgets.QLabel("Keyword:")
+        self.pinKeyword = QtWidgets.QLineEdit("people") 
         self.removeBackImages = QtWidgets.QCheckBox("Remove Back Images")
-        self.toggleGroup.addWidget(self.searchForImages, 0,0)
+
+        self.toggleGroup.addWidget(self.searchGoogle, 0,0)
+        self.toggleGroup.addWidget(self.searchPinterest, 0,1)
+        self.toggleGroup.addWidget(KeywordText, 0,2)
+        self.toggleGroup.addWidget(self.pinKeyword,0,3)
+        self.toggleGroup.addWidget(self.loadedLabel,0,4)
+        # self.toggleGroup.addWidget(self.clearButton,0,3)
+        self.loadedIndicater()
+
         # self.toggleGroup.addWidget(self.removeBackImages, 0,1)
         # self.toggleGroup.addWidget(self.weightsToggler, 1,0)
         # self.toggleGroup.addWidget(self.cropToggler, 1,1)
@@ -84,13 +99,13 @@ class MainWindow(QtWidgets.QWidget):
         self.dateBar = QtWidgets.QHBoxLayout()
         self.footer = QtWidgets.QHBoxLayout()
         self.startButton = QtWidgets.QPushButton("Start")
-        self.heightBox = QtWidgets.QLineEdit("")
+        self.heightBox = QtWidgets.QLineEdit("1000")
         heightText = QtWidgets.QLabel("Height:")
-        self.widthBox = QtWidgets.QLineEdit("") 
+        self.widthBox = QtWidgets.QLineEdit("1000") 
         widthText = QtWidgets.QLabel("Width:")
-        self.numLayersBox = QtWidgets.QLineEdit("")
+        self.numLayersBox = QtWidgets.QLineEdit("20")
         numLayersText = QtWidgets.QLabel("Number of Layers:")
-        self.spacingBox = QtWidgets.QLineEdit("")
+        self.spacingBox = QtWidgets.QLineEdit("10")
         spacingText = QtWidgets.QLabel("Spacing:")
         startDateText = QtWidgets.QLabel("Start Date:")
         sampleStartDate = QtCore.QDate(2023, 10, 18)
@@ -134,8 +149,10 @@ class MainWindow(QtWidgets.QWidget):
         self.spacingBox.textChanged.connect(self.handleChangeinSpacing)
         self.weightsToggler.stateChanged.connect(self.toggleWeights)
         self.cropToggler.stateChanged.connect(self.toggleCrop)
-        self.searchForImages.stateChanged.connect(self.toggleSearchForImages)
+        self.searchGoogle.stateChanged.connect(self.toggleSearchGoogle)
+        self.searchPinterest.stateChanged.connect(self.toggleSearchPinterest)
         self.removeBackImages.stateChanged.connect(self.toggleRemoveBackImages)
+
         self.animalBox.stateChanged.connect(self.toggleAnimalBox)
         self.artsBox.stateChanged.connect(self.toggleArtsBox)
         self.birthdayBox.stateChanged.connect(self.toggleBirthdayBox)
@@ -150,7 +167,6 @@ class MainWindow(QtWidgets.QWidget):
         self.housesBox.stateChanged.connect(self.toggleHousesBox)
         self.landBox.stateChanged.connect(self.toggleLandBox)
         self.nightBox.stateChanged.connect(self.toggleNightBox)
-
         self.perfBox.stateChanged.connect(self.togglePerfBox)
         self.petsBox.stateChanged.connect(self.togglePetsBox)
         self.recBox.stateChanged.connect(self.toggleRecBox)
@@ -164,6 +180,8 @@ class MainWindow(QtWidgets.QWidget):
         self.startButton.clicked.connect(self.toggleStartButton)
         self.startDateBox.dateChanged.connect(self.updateDate)
         self.endDateBox.dateChanged.connect(self.updateDate)
+        self.pinKeyword.textChanged.connect(self.updateKey)
+
 
         
 
@@ -180,6 +198,7 @@ class MainWindow(QtWidgets.QWidget):
             else:
                 print("ERROR: Current Credentials are not json files!")
                 return
+            
     # Functionality that handles date chages
     def updateDate(self):
             self.startDate = [self.startDateBox.date().year(), self.startDateBox.date().month(), self.startDateBox.date().day()]
@@ -192,6 +211,19 @@ class MainWindow(QtWidgets.QWidget):
             print("start:", self.startDate)
             print("end:", self.endDate)
 
+    def updateKey(self):
+        self.pinKey = self.pinKeyword.text()
+        print("PinKey = ", self.pinKey)
+
+    # Functionality updates the indicator for loaded pictures
+    def loadedIndicater(self):
+        if os.path.exists('out'):
+            self.loadedLabel.setText("Loaded")
+            self.loadedLabel.setStyleSheet("background-color: green;")
+        else:
+            self.loadedLabel.setText("Not Loaded")
+            self.loadedLabel.setStyleSheet("background-color: red;")
+
             
     # Functionality that is called when the start button is clicked
     def start(self):
@@ -201,6 +233,9 @@ class MainWindow(QtWidgets.QWidget):
                 print("Data Filter =", self.dateFilter)
                 GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
             # if self.driver.removeBackImages:
+            if self.driver.searchPinterest:
+                PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=15)
+            
             RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
             # Creates the collage      
             CollageDriver(height=self.driver.height, width=self.driver.width, 
@@ -215,9 +250,13 @@ class MainWindow(QtWidgets.QWidget):
         self.driver.cropBoundingBoxes = self.cropToggler.isChecked()
         print("toggledCrop: ", self.driver.cropBoundingBoxes)
 
-    def toggleSearchForImages(self):
-        self.driver.searchForImages = self.searchForImages.isChecked()
+    def toggleSearchGoogle(self):
+        self.driver.searchForImages = self.searchGoogle.isChecked()
         print("toggledSearchForImages: ", self.driver.searchForImages)
+
+    def toggleSearchPinterest(self):
+        self.driver.searchPinterest = self.searchPinterest.isChecked()
+        print("toggledSearchForImages: ", self.driver.searchPinterest)
 
     def toggleRemoveBackImages(self):
         self.driver.removeBackImages = self.removeBackImages.isChecked()

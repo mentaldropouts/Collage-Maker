@@ -36,7 +36,7 @@ class PhotoSearch:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    '_secrets_/client_secrets.json', self.scopes)
+                    '_secrets_/client_secret.json', self.scopes)
                 creds = flow.run_local_server()
                 # Save the credentials for the next run
                 with open('_secrets_/token.json', 'w') as token:

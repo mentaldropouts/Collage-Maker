@@ -35,6 +35,7 @@ class mainDriver():
         self.weights = False
         self.cropBoundingBoxes = True
         self.searchForImages = False
+        self.searchPinterest = False
         self.removeBackImages = True
         # Content Filter States
         self.animals = False

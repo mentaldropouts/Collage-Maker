@@ -9,7 +9,7 @@ class NewCollage:
         self.image = [Image.new("RGBA", (height,width)) for i in range(num_images)]
         print(len(self.image))
         self.collageSize = [height,width]
-        print(self.collageSize)
+        print(self.collageSize, "images", num_images)
         self.dir = folder
         self.images = []
         self.weights_path = 'weights.json'
