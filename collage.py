@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
 from random import shuffle,randint
 import math
@@ -67,15 +67,15 @@ class NewCollage:
         for imageFile in self.image_files:
             try:
                 image = Image.open(imageFile)
-                
+
                 # Calculate target dimensions based on aspect ratio
-                aspect_ratio = abs(image.width / image.height)
+                aspect_ratio = image.width / image.height
                 # print(aspect_ratio)
                 if aspect_ratio > 1:  # Landscape image
-                    self.target_width = max_width // self.num_rows
+                    self.target_width = max_width // self.num_rows-1
                     self.target_height = int(self.target_width / aspect_ratio)
                 else:  # Portrait image
-                    self.target_height = max_height // self.num_rows
+                    self.target_height = max_height // self.num_rows-1
                     self.target_width = int(self.target_height * aspect_ratio)
                 
             except Exception as e:
@@ -102,30 +102,43 @@ class NewCollage:
 # Output: The data for the final collage
 #####################################################################
     def addImagesTogether(self):
+
         base = self.image[0]
+        print("BASEH: ", base.height, "BASEW: ", base.width)
         for i in range(0, len(self.image)):
             if i == 0:
                 base.paste(self.image[i],(0,0),mask = self.image[i])
             else:
                 if i % 2 == 0: 
-                    randWidth = randint(50,300)
-                    randHeight = randint(100,150)
+                    # randWidth = randint(100,150)
+                    randWidth = randint(0,0)
+                    randHeight = randint(0,0)
                 elif i % 2 == 1:
-                    randWidth = randint(-300, -50)
-                    randHeight = randint(-150, -100)
-
+                    randWidth = randint(0,0)
+                    randHeight = randint(0,0)
                 base.paste(self.image[i],(randWidth,randHeight),mask = self.image[i])
         return base
     
+
+
+#####################################################################
+# Purpose: Making the individual collages
+# Input: The images in self.images
+# Output: A collage image 
+#####################################################################
     def addImages(self):
         shuffle(self.images)
         curImage = self.image[self.curImagePos]
         for image in self.images:
             print(f"Pasting {self.curFileNum:<3} position:  {self.current_x:<5}   {self.current_y:<5}  on file number  {self.curImagePos:<2}")
-            curImage.paste(image, (self.current_x, self.current_y))
+            if self.current_x < curImage.width and self.current_y < curImage.height:
+                curImage.paste(image, (self.current_x, self.current_y))
+                curImage.putpixel((self.current_x, self.current_y), (0,0,0, 255))
+            else:
+                print("Out of Range")
             self.current_x += self.target_width + self.spacing
             # If the number of imported files is greater than number of rows
-            if self.curFileNum % self.num_rows == 0:
+            if self.curFileNum % self.num_rows-1 == 0:
                 # Move the y value down appropriately
                 self.current_y += self.target_height + self.spacing
                 self.current_x = 0
@@ -144,6 +157,7 @@ class NewCollage:
     
 def CollageDriver(height, width, numLayers, useWeights, spacing):
     print("Entering CollageDriver")
+    print(width, height)
     collage = NewCollage(height, width, "result/", numLayers)
     collage.walk()
     collage.openImages()
@@ -153,7 +167,9 @@ def CollageDriver(height, width, numLayers, useWeights, spacing):
     collage.createCollage(spacing)
     result = collage.addImagesTogether()
     boundingBox = result.getbbox()
-    result = result.crop(boundingBox)
+    # result = result.crop(boundingBox)
+
+
     result.save('test.png')
     result.show('test.png')
 
@@ -161,7 +177,7 @@ def CollageDriver(height, width, numLayers, useWeights, spacing):
 # print("Entering CollageDriver")
 # collage = NewCollage(500,500,"result/", 24)
 # collage.walk()
-# collage.openImages()
+# collage.openImages()x
 # spacing = 10
 # collage.createCollage(spacing=spacing)
 # result = collage.addImagesTogether()

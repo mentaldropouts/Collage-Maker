@@ -33,7 +33,6 @@ class Images:
 #####################################################################
     def throughWalk(self):
         filePaths = []
-
         for dirNames, dirPaths, fileNames in self.w:
              print("Directories: ", dirNames)
              for file in fileNames:  
@@ -80,8 +79,13 @@ class Images:
                 name = file.split('.')[0] + ".png"
                 # This is currently hard-coded for only using the person model
                 path = f"result/"+name
-                output.save(path)
+                os.remove(i)
+                # THIS IS HARD CODED FOR NOW
+                if not os.listdir():
+                    print(os.listdir())
+                    os.rmdir('out')
                 print("Saving at ", path)
+                output.save(path)
                 #Getting the transparent weights for each image
                 if self.usingWeights:
                     data =  output.getdata()

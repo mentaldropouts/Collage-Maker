@@ -157,31 +157,31 @@ class PhotoSearch:
 # Input: out/ and result/ folders that are filled
 # Output: out/ and result/ are no were to be found.
 ######################################################################
-    def delete_folders(self, folderName):
-        try:    
-            # Walk through the directory and delete all files and subdirectories
-            for root, dirs, files in os.walk(folderName, topdown=False):
-                for file in files:
-                    print(file)
-                    file_path = os.path.join(root, file)
-                    os.remove(file_path)
-                for dir in dirs:
-                    print(dir)
-                    dir_path = os.path.join(root, dir)
-                    os.rmdir(dir_path)
-            # Remove the top-level directory
-            os.rmdir(folderName)
-            if os.path.exists(folderName):
-                print(f"Folder '{folderName}' was not deletedc.")
-            print(f"Folder '{folderName}' deleted successfully.")
-        except Exception as e:
-            print(f"An error occurred while deleting the folder: {e}")
+def delete_folders(folderName):
+    try:    
+        # Walk through the directory and delete all files and subdirectories
+        for root, dirs, files in os.walk(folderName, topdown=False):
+            for file in files:
+                print(file)
+                file_path = os.path.join(root, file)
+                os.remove(file_path)
+            for dir in dirs:
+                print(dir)
+                dir_path = os.path.join(root, dir)
+                os.rmdir(dir_path)
+        # Remove the top-level directory
+        os.rmdir(folderName)
+        if os.path.exists(folderName):
+            print(f"Folder '{folderName}' was not deletedc.")
+        print(f"Folder '{folderName}' deleted successfully.")
+    except Exception as e:
+        print(f"An error occurred while deleting the folder: {e}")
                 
 def GoogleDriver(dateFilter, contentFilter, layeredSearch=False):
     instance = PhotoSearch()
     instance.delete_json_file('weights.json')
-    instance.delete_folders('out')
-    instance.delete_folders('result')
+    delete_folders('out')
+    delete_folders('result')
     
     # LayeredSearch determines if there are multiple searches with different
     # content filters. Since you would want to keep the old searches results 
