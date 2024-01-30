@@ -28,7 +28,6 @@ class NewCollage:
         print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.image))
 
     def openImages(self):
-
         os.makedirs("out", exist_ok=True)
         # Get a list of image files in the folder
         self.image_files = [os.path.join(folder, f) for folder, _, files in os.walk(self.dir) for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
@@ -57,9 +56,9 @@ class NewCollage:
 
         # Open and paste each image into the collage
         self.current_x, self.current_y = 0, 0
-        max_height = self.collageSize[1]
-        max_width = self.collageSize[0]
-        self.num_rows = int(math.sqrt(self.partition))
+        self.max_height = self.collageSize[1]
+        self.max_width = self.collageSize[0]
+        self.num_rows = int(math.sqrt(self.partition)-1)
 
         self.curFileNum = 1
         self.curImagePos = 0
@@ -67,15 +66,14 @@ class NewCollage:
         for imageFile in self.image_files:
             try:
                 image = Image.open(imageFile)
-
                 # Calculate target dimensions based on aspect ratio
                 aspect_ratio = image.width / image.height
                 # print(aspect_ratio)
                 if aspect_ratio > 1:  # Landscape image
-                    self.target_width = max_width // self.num_rows-1
+                    self.target_width = int(self.max_width // self.num_rows)
                     self.target_height = int(self.target_width / aspect_ratio)
                 else:  # Portrait image
-                    self.target_height = max_height // self.num_rows-1
+                    self.target_height = int(self.max_height // self.num_rows)
                     self.target_width = int(self.target_height * aspect_ratio)
                 
             except Exception as e:
@@ -111,11 +109,11 @@ class NewCollage:
             else:
                 if i % 2 == 0: 
                     # randWidth = randint(100,150)
-                    randWidth = randint(0,0)
-                    randHeight = randint(0,0)
+                    randWidth = randint(-50,50)
+                    randHeight = randint(-50,50)
                 elif i % 2 == 1:
-                    randWidth = randint(0,0)
-                    randHeight = randint(0,0)
+                    randWidth = randint(-100,100)
+                    randHeight = randint(-100,100)
                 base.paste(self.image[i],(randWidth,randHeight),mask = self.image[i])
         return base
     
@@ -131,14 +129,17 @@ class NewCollage:
         curImage = self.image[self.curImagePos]
         for image in self.images:
             print(f"Pasting {self.curFileNum:<3} position:  {self.current_x:<5}   {self.current_y:<5}  on file number  {self.curImagePos:<2}")
-            if self.current_x < curImage.width and self.current_y < curImage.height:
+            if self.current_x < self.max_width and self.current_y < self.max_height:
                 curImage.paste(image, (self.current_x, self.current_y))
-                curImage.putpixel((self.current_x, self.current_y), (0,0,0, 255))
+                # curImage.putpixel((self.current_x, self.current_y), (255,255,255,255))
             else:
                 print("Out of Range")
             self.current_x += self.target_width + self.spacing
             # If the number of imported files is greater than number of rows
-            if self.curFileNum % self.num_rows-1 == 0:
+            # if self.curFileNum % self.num_rows == 0:
+
+            # if the next iteration would put self.current_x over
+            if self.current_x + self.target_width > self.max_width:
                 # Move the y value down appropriately
                 self.current_y += self.target_height + self.spacing
                 self.current_x = 0
