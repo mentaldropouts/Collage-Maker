@@ -20,6 +20,7 @@ class mainDriver():
         self.searchForImages = False
         self.searchPinterest = False
         self.removeBackImages = True
+        self.credsLoaded = False
         
         # Content Filter States
         self.startButton = False

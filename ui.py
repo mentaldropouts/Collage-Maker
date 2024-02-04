@@ -40,21 +40,22 @@ class MainWindow(QtWidgets.QWidget):
         self.googleLayout = QtWidgets.QGridLayout()
         self.googleLayout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         self.searchGoogle = QtWidgets.QCheckBox("Search Google Photos")
+        credsLabel = QtWidgets.QLabel("*requires credentials")
         startDateText = QtWidgets.QLabel("Start Date:")
         endDateText = QtWidgets.QLabel("End Date:")
         self.endDateBox = QtWidgets.QDateEdit(sampleEndDate)
         self.startDateBox = QtWidgets.QDateEdit(sampleStartDate) 
         # Adding items to Google Layout
-        
         self.googleLayout.addWidget(self.searchGoogle,0,0)
-        self.googleLayout.addWidget(startDateText,1,0)
-        self.googleLayout.addWidget(self.startDateBox,1,1)
-        self.googleLayout.addWidget(endDateText,2,0)
-        self.googleLayout.addWidget(self.endDateBox,2,1)
-
+        self.googleLayout.addWidget(credsLabel,1,0)
+        self.googleLayout.addWidget(startDateText,2,0)
+        self.googleLayout.addWidget(self.startDateBox,2,1)
+        self.googleLayout.addWidget(endDateText,3,0)
+        self.googleLayout.addWidget(self.endDateBox,3,1)
         self.clearButton = QtWidgets.QPushButton("clear")
         self.pinterestLayout = QtWidgets.QGridLayout()
         self.searchPinterest = QtWidgets.QCheckBox("Search Pinterest")
+        self.pinterestSearchButton = QtWidgets.QPushButton("Search")
         KeywordText = QtWidgets.QLabel("Keyword:")
         self.pinKeyword = QtWidgets.QLineEdit("People")
         numImagesText = QtWidgets.QLabel("Number of Images:")
@@ -69,12 +70,16 @@ class MainWindow(QtWidgets.QWidget):
         self.pinterestLayout.addWidget(self.pinKeyword)
         self.pinterestLayout.addWidget(numImagesText)
         self.pinterestLayout.addWidget(self.numImagesBox)
+        self.pinterestLayout.addWidget(self.pinterestSearchButton)
+    
+
         # self.removeBackImages = QtWidgets.QCheckBox("Remove Back Images")
 
         # Updates the indicator at start
         self.loadedIndicater()
 
         {
+
         # self.toggleGroup.addWidget(self.removeBackImages, 0,1)
         # self.toggleGroup.addWidget(self.weightsToggler, 1,0)
         # self.toggleGroup.addWidget(self.cropToggler, 1,1)
@@ -139,12 +144,12 @@ class MainWindow(QtWidgets.QWidget):
         self.footer = QtWidgets.QHBoxLayout()
         self.startButton = QtWidgets.QPushButton("Start")
         self.heightBox = QtWidgets.QLineEdit("1000")
-        heightText = QtWidgets.QLabel("Height:")
         self.widthBox = QtWidgets.QLineEdit("1000") 
-        widthText = QtWidgets.QLabel("Width:")
         self.numLayersBox = QtWidgets.QLineEdit("20")
-        numLayersText = QtWidgets.QLabel("Number of Layers:")
         self.spacingBox = QtWidgets.QLineEdit("10")
+        heightText = QtWidgets.QLabel("Height:")
+        widthText = QtWidgets.QLabel("Width:")
+        numLayersText = QtWidgets.QLabel("Number of Layers:")
         spacingText = QtWidgets.QLabel("Spacing:")
         
         self.footer.addWidget(heightText)
@@ -155,8 +160,9 @@ class MainWindow(QtWidgets.QWidget):
         self.footer.addWidget(self.numLayersBox)
         self.footer.addWidget(spacingText)
         self.footer.addWidget(self.spacingBox)
-        # self.footer.addWidget(self.clearButton)
         self.footer.addWidget(self.startButton)
+
+        # self.footer.addWidget(self.clearButton)
 
         # Configuring Preview
         self.imageDisplay = QtWidgets.QGraphicsView()
@@ -183,6 +189,7 @@ class MainWindow(QtWidgets.QWidget):
         # self.cropToggler.stateChanged.connect(self.toggleCrop)
         self.searchGoogle.stateChanged.connect(self.toggleSearchGoogle)
         self.searchPinterest.stateChanged.connect(self.toggleSearchPinterest)
+        
         # self.removeBackImages.stateChanged.connect(self.toggleRemoveBackImages)
 
         {
@@ -216,34 +223,48 @@ class MainWindow(QtWidgets.QWidget):
         self.startDateBox.dateChanged.connect(self.updateDate)
         self.endDateBox.dateChanged.connect(self.updateDate)
         self.pinKeyword.textChanged.connect(self.updateKey)
+        self.searchGoogle.stateChanged.connect(self.showFiles)
         self.numImagesBox.currentIndexChanged.connect(self.updateNumImages)
         self.clearButton.clicked.connect(self.clearFolders)
+        self.pinterestSearchButton.clicked.connect(self.searchP)
+        # self.googleSearchButton.clicked.connect(GoogleDriver)
+
+
+    def searchP(self):
+        if self.driver.searchPinterest == True:
+            PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=self.numImages)
+
 
     # Functionality that is called when the choose credentials button is clicked
-    # def showFiles(self):
-    #     fileDialog = QtWidgets.QFileDialog()
-    #     fileDialog.setNameFilter("Text files (*.txt);;All files (*)")
-    #     if fileDialog.exec():
-    #         # Get the selected file name
-    #         selected_file = fileDialog.selectedFiles()
-    #         print(f'Selected File: {selected_file}')
-    #         if selected_file.split('.')[-1] == 'json':
-    #             print("Current Credentials are json files!")
-    #         else:
-    #             print("ERROR: Current Credentials are not json files!")
-    #             return
-            
+    def showFiles(self):
+        if self.searchGoogle.isChecked() and self.driver.credsLoaded == False:
+            fileDialog = QtWidgets.QFileDialog()
+            fileDialog.setNameFilter("JSON files (*.json);;All files (*)")
+            selected_file = None
+            if fileDialog.exec():
+                # Get the selected file name
+                selected_file = fileDialog.selectedFiles() 
+                print(f'Selected File: {selected_file}')
+                if selected_file[0].split('.')[-1] == 'json':
+                    print("Current Credentials are json files!")
+                    self.driver.credsLoaded = True
+                    # Checking the Check Box on the UI
+                    self.driver.searchForImages = self.searchGoogle.isChecked()
+                elif selected_file == None:
+                    print("ERROR: Current Credentials are not json files!")
+                    self.driver.credsLoaded = False
+                    self.searchGoogle.setChecked(False)
+                return
         
-    # Functionality that handles date chages
-        
+    # Functionality that handles date chages  
     def updateDate(self):
             self.startDate = [self.startDateBox.date().year(), self.startDateBox.date().month(), self.startDateBox.date().day()]
             self.endDate = [self.endDateBox.date().year(), self.endDateBox.date().month(), self.endDateBox.date().day()]
-
             self.dateFilter = {
                 "startDate": {"year": self.startDate[0], "month": self.startDate[1], "day": self.startDate[2]},
                 "endDate": {"year": self.endDate[0], "month": self.endDate[1], "day": self.endDate[2]}
             }
+
             # print("start:", self.startDate)
             # print("end:", self.endDate)
 
@@ -316,7 +337,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def toggleSearchPinterest(self):
         self.driver.searchPinterest = self.searchPinterest.isChecked()
-        print("toggledSearchForImages: ", self.driver.searchPinterest)
+        print("toggledSearchPinterest: ", self.driver.searchPinterest)
 
     {
 
