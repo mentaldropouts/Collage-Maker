@@ -9,7 +9,7 @@ from remover import RemoveDriver
 from collage import CollageDriver
 import os
 
-class MainWindow(QtWidgets.QWidget):
+class mainUIClass(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         # Initial States
@@ -229,7 +229,7 @@ class MainWindow(QtWidgets.QWidget):
         self.pinterestSearchButton.clicked.connect(self.searchP)
         # self.googleSearchButton.clicked.connect(GoogleDriver)
 
-
+    # Function for the Search Pinterest Button
     def searchP(self):
         if self.driver.searchPinterest == True:
             PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=self.numImages)
@@ -441,9 +441,9 @@ class MainWindow(QtWidgets.QWidget):
     def handleChangeinSpacing(self):
         self.driver.spacing = int(self.spacingBox.text())
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    ui = MainWindow()
-    ui.show()
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+#     ui = MainWindow()
+#     ui.show()
 
-    sys.exit(app.exec())
+#     sys.exit(app.exec())

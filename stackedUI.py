@@ -1,17 +1,21 @@
 from PySide6 import QtCore, QtWidgets, QtGui
-from Firstui import FirstUI
+from mainUI import mainUIClass
+from filesUI import filesUIClass
 import sys, os
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-        self.MainUI = FirstUI()
+        main_layout = QtWidgets.QVBoxLayout()
+        self.mainUI = mainUIClass()
+        self.filesUI = filesUIClass()
+        self.widgets = QtWidgets.QTabWidget()
 
-        self.stackedWidget = QtWidgets.QStackedWidget(self)
-        self.layout = QtWidgets.QBoxLayout()
-        self.layout.addWidget(self.MainUI)
-        self.stackedWidget.addWidget(self.MainUI)
-
+        self.widgets.addTab(self.mainUI, "Home")
+        self.widgets.addTab(self.filesUI, "Files")
+        
+        main_layout.addWidget(self.widgets)
+        self.setLayout(main_layout)
 
 
 
