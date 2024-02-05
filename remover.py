@@ -80,10 +80,6 @@ class Images:
                 # This is currently hard-coded for only using the person model
                 path = f"result/"+name
                 os.remove(i)
-                # THIS IS HARD CODED FOR NOW
-                if not os.listdir():
-                    print(os.listdir())
-                    os.rmdir('out')
                 print("Saving at ", path)
                 output.save(path)
                 #Getting the transparent weights for each image
