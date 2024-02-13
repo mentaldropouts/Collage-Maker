@@ -279,8 +279,8 @@ class mainUIClass(QtWidgets.QWidget):
 
     # Functionality updates the indicator for loaded pictures
     def loadedIndicater(self):
-        if os.path.exists(self.driver.imageDir) and not os.listdir(self.driver.imageDir):
-            os.rmdir(self.driver.imageDir)
+        # if os.path.exists(self.driver.imageDir) and not os.listdir(self.driver.imageDir):
+            # os.rmdir(self.driver.imageDir)
         if os.path.exists('out') and self.driver.removing == False:
             self.loadedLabel.setText("Loaded")
             self.loadedLabel.setStyleSheet("background-color: orange;")
