@@ -42,7 +42,10 @@ class filesUIClass(QtWidgets.QWidget):
         self.setLayout(layout2)
 
         # Slotting the table to watch which item is selected
-        self.table_widget.itemSelectionChanged.connect(self.show_image_preview)
+        # TODO Add lambda functionality to slot showing image preview with clicking file name
+        # and toggle_checkbox with clicking the checkbox
+
+        # self.table_widget.itemSelectionChanged.connect(self.show_image_preview)
 
     def update_table(self, path):
         if path == self.folder_path:
@@ -86,8 +89,8 @@ class filesUIClass(QtWidgets.QWidget):
         
         if selected_items:
             file_path = selected_items[0].text()  # Assuming the second column contains file paths
-
-            if file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+            print(file_path)
+            if file_path.lower().endswith(('.webp','.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                 pixmap = QtGui.QPixmap(file_path)
            # Get the current size of the pixmap
                 current_width = pixmap.width()
