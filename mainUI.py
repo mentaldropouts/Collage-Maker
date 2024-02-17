@@ -1,7 +1,7 @@
 import sys
 import random
 from PySide6 import QtCore, QtWidgets, QtGui
-from states import mainDriver
+from main import mainDriver
 
 from Gdriver import GoogleDriver, delete_folders
 from PDriver import PinterestDriver
@@ -17,6 +17,8 @@ class mainUIClass(QtWidgets.QWidget):
         self.numImages = 50
         sampleStartDate = QtCore.QDate(2023, 10, 18)
         sampleEndDate = QtCore.QDate(2023, 11, 18)
+
+
         self.driver = mainDriver()
         self.layout = QtWidgets.QGridLayout(self)
 
