@@ -5,14 +5,14 @@ import math
 import json
 
 class NewCollage:
-    def __init__(self, height, width, folder, num_images):
-        self.image = [Image.new("RGBA", (height,width)) for i in range(num_images)]
-        print(len(self.image))
+    def __init__(self, height, width, folder, numLayers):
+        self.layers = [Image.new("RGBA", (height,width)) for i in range(numLayers)]
+        print(len(self.layers))
         self.collageSize = [height,width]
-        print(self.collageSize, "images", num_images)
+        print(self.collageSize, "images", numLayers)
         self.dir = folder
         self.images = []
-        self.weights_path = 'weights.json'
+        self.weightsPath = 'weights.json'
 
         self.w = os.walk(self.dir)
         
@@ -24,33 +24,33 @@ class NewCollage:
                 filePaths.append(filePath)
     
         # Number of images that are to be included in each individual collage
-        self.partition = len(filePaths) // len(self.image)
-        print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.image))
+        self.partition = len(filePaths) // len(self.layers)
+        print("partition: ", self.partition, "num files", len(filePaths), "num collages", len(self.layers))
 
     def openImages(self):
         os.makedirs("out", exist_ok=True)
         # Get a list of image files in the folder
-        self.image_files = [os.path.join(folder, f) for folder, _, files in os.walk(self.dir) for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        self.imageFiles = [os.path.join(folder, f) for folder, _, files in os.walk(self.dir) for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
 
     def transparentWeightSorting(self):
         # Read the dictionary from the file
-        with open(self.weights_path, 'r') as json_file:
-            print("opening ", str(self.weights_path))
+        with open(self.weightsPath, 'r') as json_file:
+            print("opening ", str(self.weightsPath))
             loaded_dict = json.load(json_file) 
         # Sorting images in largest to smallest order
-        tuple_array = [(key, value) for key, value in loaded_dict.items()]
-        sorted_tuple_array = sorted(tuple_array, key=lambda x: x[1], reverse=True)
+        tupleArray = [(key, value) for key, value in loaded_dict.items()]
+        sorted_tuple_array = sorted(tupleArray, key=lambda x: x[1], reverse=True)
         imagePaths = [x[0] for x in sorted_tuple_array]
         
-        self.image_files.clear()
-        self.image_files = imagePaths
+        self.imageFiles.clear()
+        self.imageFiles = imagePaths
 
     
     def createCollage(self, spacing):
         self.spacing = spacing
 
         # Check if there are any images in the folder
-        if not self.image_files:
+        if not self.imageFiles:
             print("No image files found in the folder.")
             return None
 
@@ -63,7 +63,7 @@ class NewCollage:
         self.curFileNum = 1
         self.curImagePos = 0
 
-        for imageFile in self.image_files:
+        for imageFile in self.imageFiles:
             try:
                 image = Image.open(imageFile)
                 # Calculate target dimensions based on aspect ratio
@@ -90,7 +90,7 @@ class NewCollage:
         # self.showImages()
                 
     def showImages(self):
-        for i in self.image:
+        for i in self.layers:
             i.show()
     
 #####################################################################
@@ -101,11 +101,11 @@ class NewCollage:
 #####################################################################
     def addImagesTogether(self):
 
-        base = self.image[0]
+        base = self.layers[0]
         print("BASEH: ", base.height, "BASEW: ", base.width)
-        for i in range(0, len(self.image)):
+        for i in range(0, len(self.layers)):
             if i == 0:
-                base.paste(self.image[i],(0,0),mask = self.image[i])
+                base.paste(self.layers[i],(0,0),mask = self.layers[i])
             else:
                 if i % 2 == 0: 
                     # randWidth = randint(100,150)
@@ -114,7 +114,7 @@ class NewCollage:
                 elif i % 2 == 1:
                     randWidth = randint(-100,100)
                     randHeight = randint(-100,100)
-                base.paste(self.image[i],(randWidth,randHeight),mask = self.image[i])
+                base.paste(self.layers[i],(randWidth,randHeight),mask = self.layers[i])
         return base
     
 
@@ -126,7 +126,7 @@ class NewCollage:
 #####################################################################
     def addImages(self):
         shuffle(self.images)
-        curImage = self.image[self.curImagePos]
+        curImage = self.layers[self.curImagePos]
         for image in self.images:
             print(f"Pasting {self.curFileNum:<3} position:  {self.current_x:<5}   {self.current_y:<5}  on file number  {self.curImagePos:<2}")
             if self.current_x < self.max_width and self.current_y < self.max_height:
@@ -148,9 +148,9 @@ class NewCollage:
             # print(portionValue, "-> ", self.curFileNum, "%", self.partition)
             if portionValue == 0:
                 self.curImagePos += 1 
-                if self.curImagePos >= len(self.image):
+                if self.curImagePos >= len(self.layers):
                     break
-                curImage = self.image[self.curImagePos]
+                curImage = self.layers[self.curImagePos]
                 self.curFileNum = 0
                 self.current_x = 0 
                 self.current_y = 0

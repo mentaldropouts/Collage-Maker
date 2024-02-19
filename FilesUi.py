@@ -4,21 +4,42 @@ from PySide6 import QtCore, QtWidgets, QtGui
 import sys, os
 
 class CheckBoxTableWidgetItem(QtWidgets.QTableWidgetItem):
+    statechanged = QtCore.Signal("stateChanged")
+
     def __init__(self, checked=False):
+
         super(CheckBoxTableWidgetItem, self).__init__()
         self.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.setCheckState(QtCore.Qt.Checked if checked else QtCore.Qt.Unchecked)
+
+        print(self.checkState())
+        
+    def check_item_state(self):
+        state = self.checkState()
+        if state == QtCore.Qt.Checked:
+            print("The item is checked")
+        elif state == QtCore.Qt.Unchecked:
+            print("The item is unchecked")
+        else:
+            print("The item is in a partially checked state") 
+
 
 class filesUIClass(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
-        self.folder_path = "out"
+        self.folder_path = "result"
         self.file_watcher = QtCore.QFileSystemWatcher(self)
         self.file_watcher.fileChanged.connect(self.update_table)
         self.initUI()
 
-    
+    def on_state_changed(state):
+        if state == QtCore.Qt.Checked:
+            print("Checkbox state changed: Checked")
+        elif state == QtCore.Qt.Unchecked:
+            print("Checkbox state changed: Unchecked")
+        else:
+            print("Checkbox state changed: Partially checked")
 
     def initUI(self):
         # Set layout
@@ -30,7 +51,11 @@ class filesUIClass(QtWidgets.QWidget):
         self.table_widget.setColumnWidth(0, 20)
         self.table_widget.setMinimumWidth(100)
         self.table_widget.setMaximumWidth(500)
+
+
         self.populate_table(self.folder_path)
+        self.table_widget.cellClicked.connect(lambda row, column: self.show_image_preview(row,column))
+
         self.image_preview_label = QtWidgets.QLabel('Image Preview')
         self.image_preview_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.delete_button = QtWidgets.QPushButton('Delete Selected', self)
@@ -57,7 +82,6 @@ class filesUIClass(QtWidgets.QWidget):
         if os.path.exists(folder_path):
             # Get a list of files in the selected folder
             files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
-
             # Populate the table with file names and paths
             for file_name in files:
                 row_position = self.table_widget.rowCount()
@@ -68,8 +92,11 @@ class filesUIClass(QtWidgets.QWidget):
                 file_name_item = QtWidgets.QTableWidgetItem(file_name)
                 file_path_item = QtWidgets.QTableWidgetItem(file_path)
 
+
                 # Create a checkbox item for each row
                 checkbox_item = CheckBoxTableWidgetItem(checked=False)
+                # checkbox_item.stateChanged.con÷nect(lambda state: checkbox_item.check_item_state())
+
                 self.table_widget.setItem(row_position, 0, checkbox_item)
 
                 # Set items in the table
@@ -78,17 +105,9 @@ class filesUIClass(QtWidgets.QWidget):
         else:
             print(f"{folder_path} does not exist yet!")
 
-
-    def show_image_preview(self):
-        selected_items = self.table_widget.selectedItems()
-        print(selected_items[0])
-        print()
-        print()
-
-
-        
-        if selected_items:
-            file_path = selected_items[0].text()  # Assuming the second column contains file paths
+    def show_image_preview(self, row, column):
+        file_path = self.table_widget.item(row, column).text()
+        if file_path :
             print(file_path)
             if file_path.lower().endswith(('.webp','.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                 pixmap = QtGui.QPixmap(file_path)

@@ -1,7 +1,9 @@
 import sys
 import random
+from time import sleep
 from PySide6 import QtCore, QtWidgets, QtGui
 from main import mainDriver
+
 
 from Gdriver import GoogleDriver, delete_folders
 from PDriver import PinterestDriver
@@ -14,10 +16,9 @@ class mainUIClass(QtWidgets.QWidget):
         super().__init__()
         # Initial States
         self.pinKey = "People"
-        self.numImages = 50
+        self.numImages = 20
         sampleStartDate = QtCore.QDate(2023, 10, 18)
         sampleEndDate = QtCore.QDate(2023, 11, 18)
-
 
         self.driver = mainDriver()
         self.layout = QtWidgets.QGridLayout(self)
@@ -143,8 +144,8 @@ class mainUIClass(QtWidgets.QWidget):
         # Configuring Footer
         self.footer = QtWidgets.QHBoxLayout()
         self.startButton = QtWidgets.QPushButton("Start")
-        self.heightBox = QtWidgets.QLineEdit("1000")
-        self.widthBox = QtWidgets.QLineEdit("1000") 
+        self.heightBox = QtWidgets.QLineEdit("500")
+        self.widthBox = QtWidgets.QLineEdit("500") 
         self.numLayersBox = QtWidgets.QLineEdit("20")
         self.spacingBox = QtWidgets.QLineEdit("10")
         heightText = QtWidgets.QLabel("Height:")
@@ -231,6 +232,7 @@ class mainUIClass(QtWidgets.QWidget):
 
     # Function for the Search Pinterest Button
     def searchP(self):
+        self.loadedIndicater()
         if self.driver.searchPinterest == True:
             PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=self.numImages)
 
@@ -279,46 +281,55 @@ class mainUIClass(QtWidgets.QWidget):
 
     # Functionality updates the indicator for loaded pictures
     def loadedIndicater(self):
-        # if os.path.exists(self.driver.imageDir) and not os.listdir(self.driver.imageDir):
-            # os.rmdir(self.driver.imageDir)
-        if os.path.exists('out') and self.driver.removing == False:
-            self.loadedLabel.setText("Loaded")
-            self.loadedLabel.setStyleSheet("background-color: orange;")
+        print("Starting Load Indicator")
+        sleep(0.5)
+        if self.driver.searching:
+            self.loadedLabel.setText("Searching")
+            self.loadedLabel.setStyleSheet("background-color: Aquamarine;")
         elif self.driver.removing == True:
             print("Removing state")
             self.loadedLabel.setText("Removing")
-            self.loadedLabel.setStyleSheet("background-color: yellow;")
-        elif os.path.exists('result') and self.driver.removing == False:
+            self.loadedLabel.setStyleSheet("background-color: indigo;")
+        elif len(os.listdir('result')) != 0  and self.driver.removing == False and self.driver.searching == False:
+            self.loadedLabel.setText("Loaded")
+            self.loadedLabel.setStyleSheet("background-color: orange;")
+        elif os.path.exists('test.png') and os.path.exists('out') == False and os.path.exists('result') and self.driver.removing == False:
             self.loadedLabel.setText("Done")
             self.loadedLabel.setStyleSheet("background-color: green;")
-        else:
+        elif len(os.listdir('out')) == 0 and len(os.listdir('result')) == 0:
             self.loadedLabel.setText("Not Loaded")
             self.loadedLabel.setStyleSheet("background-color: red;")
 
     # Functionality that is called when the start button is clicked
     def start(self):
         print("starting")
+        if self.driver.searchForImages or self.driver.searchPinterest: 
+            self.driver.searching == True
         self.loadedIndicater()
         if self.driver.startButton:
             if self.driver.searchForImages:
                 # print("Data Filter =", self.dateFilter)
                 GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
-                self.driver.removing = True
+                # Changing States
+                self.driver.searching == False
                 self.loadedIndicater()
-                RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
-                self.driver.removing = False
             if self.driver.searchPinterest:
                 PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=self.numImages)
-                self.driver.removing = True
+                # Changing States
+                self.driver.searching == False
                 self.loadedIndicater()
-                RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
-                self.driver.removing = False
-            # Creates the collage      
+
+            self.driver.removing = True
+            RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
+            self.driver.removing = True
+
+            # Creates the collage
             self.loadedIndicater()
             CollageDriver(height=self.driver.height, width=self.driver.width, 
                           numLayers=self.driver.numLayers, spacing=self.driver.spacing,
                           useWeights=self.driver.weights)
             print("Finished Collage Driver!")
+            self.loadedIndicater()
 
     def clearFolders(self):
         delete_folders('out/')
@@ -336,6 +347,7 @@ class mainUIClass(QtWidgets.QWidget):
         print("toggledSearchForImages: ", self.driver.searchForImages)
 
     def toggleSearchPinterest(self):
+        print("Starting Pinterest Search")
         self.driver.searchPinterest = self.searchPinterest.isChecked()
         print("toggledSearchPinterest: ", self.driver.searchPinterest)
 

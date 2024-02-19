@@ -17,8 +17,12 @@ class mainDriver():
         self.weights = False
         self.removing = False
         self.cropBoundingBoxes = True
+        # State of buttons 
         self.searchForImages = False
         self.searchPinterest = False
+        # Linked to seachForImages and seacrchPinterest 
+        self.searching = False
+
         self.removeBackImages = True
         self.credsLoaded = False
         
