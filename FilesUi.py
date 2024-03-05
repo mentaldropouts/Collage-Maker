@@ -30,6 +30,7 @@ class filesUIClass(QtWidgets.QWidget):
         super().__init__()
         self.folder_path = "result"
         self.file_watcher = QtCore.QFileSystemWatcher(self)
+        self.file_watcher.addPath(self.folder_path)
         self.file_watcher.fileChanged.connect(self.update_table)
         self.initUI()
 

@@ -14,4 +14,10 @@ To use this program you first need to add your credentials.json file to a folder
 Then once you have that set up you can set the filters and other paramters that you want to use in the main.py file and then run it. Then your collage should be saved to test.png.
 
 ## Example 
-![alt text](Example.png)
+![Example](Examples/Example.png)
+
+![Example2](Examples/Example2.png)
+
+![Example3](Examples/Example3.png)
+
+![Example4](Examples/Example4.png)

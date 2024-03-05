@@ -14,6 +14,13 @@ import os
 class mainUIClass(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+
+        # If out and result are not made, make them
+        if os.path.exists('out') == False:
+            os.mkdir('out')
+        if os.path.exists('result') == False:
+            os.mkdir('result')
+
         # Initial States
         self.pinKey = "People"
         self.numImages = 20
@@ -79,70 +86,9 @@ class mainUIClass(QtWidgets.QWidget):
         # Updates the indicator at start
         self.loadedIndicater()
 
-        {
-
-        # self.toggleGroup.addWidget(self.removeBackImages, 0,1)
-        # self.toggleGroup.addWidget(self.weightsToggler, 1,0)
-        # self.toggleGroup.addWidget(self.cropToggler, 1,1)
-
-        # Configuring Content Group
-        # self.contentGroup = QtWidgets.QGridLayout()
-        # self.animalBox = QtWidgets.QCheckBox("ANIMALS")
-        # self.artsBox = QtWidgets.QCheckBox("ARTS")
-        # self.birthdayBox = QtWidgets.QCheckBox("BIRTHDAYS")
-        # self.cityBox = QtWidgets.QCheckBox("CITYSCAPES")
-        # self.craftsBox = QtWidgets.QCheckBox("CRAFTS")
-        # self.docBox = QtWidgets.QCheckBox("DOCUMENTS")
-        # self.fashionBox = QtWidgets.QCheckBox("FASHION")
-        # self.flowersBox = QtWidgets.QCheckBox("FLOWERS")
-        # self.foodBox = QtWidgets.QCheckBox("FOOD")
-        # self.gardenBox = QtWidgets.QCheckBox("GARDENS")
-        # self.holidaysBox = QtWidgets.QCheckBox("HOLIDAYS")
-        # self.housesBox = QtWidgets.QCheckBox("HOUSES")
-        # self.landBox = QtWidgets.QCheckBox("LANDSCAPES")
-        # self.nightBox = QtWidgets.QCheckBox("NIGHT")
-        # self.peopleBox = QtWidgets.QCheckBox("PEOPLE")
-        # self.perfBox = QtWidgets.QCheckBox("PERFORMANCES")
-        # self.petsBox = QtWidgets.QCheckBox("PETS")
-        # self.recBox = QtWidgets.QCheckBox("RECEIPTS")
-        # self.screenBox = QtWidgets.QCheckBox("SCREENSHOTS")
-        # self.selBox = QtWidgets.QCheckBox("SELFIES")
-        # self.sportBox = QtWidgets.QCheckBox("SPORTS")
-        # self.travelBox = QtWidgets.QCheckBox("TRAVEL")
-        # self.utilityBox = QtWidgets.QCheckBox("UTILITY")
-        # self.weddingBox = QtWidgets.QCheckBox("WEDDINGS")
-        # self.whiteBoards = QtWidgets.QCheckBox("WHITEBOARDS")
-
-        # FUNCTIONALITY HAS NOT BEEN FINISHED FOR THESE FUNCTIONS 
-        # self.contentGroup.addWidget(self.animalBox, 0,0)
-        # self.contentGroup.addWidget(self.artsBox, 1,0)
-        # self.contentGroup.addWidget(self.birthdayBox, 2,0)
-        # self.contentGroup.addWidget(self.cityBox, 3,0)
-        # self.contentGroup.addWidget(self.craftsBox, 4,0)
-        # self.contentGroup.addWidget(self.docBox, 5,0)
-        # self.contentGroup.addWidget(self.fashionBox, 6,0)
-        # self.contentGroup.addWidget(self.flowersBox, 7,0)
-        # self.contentGroup.addWidget(self.foodBox, 8, 0)
-        # self.contentGroup.addWidget(self.gardenBox, 9, 0)
-        # self.contentGroup.addWidget(self.holidaysBox, 10, 0)
-        # self.contentGroup.addWidget(self.housesBox, 11, 0)
-        # self.contentGroup.addWidget(self.landBox, 12, 0)
-        # self.contentGroup.addWidget(self.nightBox, 13, 0)
-        # self.contentGroup.addWidget(self.peopleBox, 0, 1)
-        # self.contentGroup.addWidget(self.perfBox, 1, 1)
-        # self.contentGroup.addWidget(self.petsBox, 2, 1)
-        # self.contentGroup.addWidget(self.recBox, 3, 1)
-        # self.contentGroup.addWidget(self.screenBox, 4, 1)
-        # self.contentGroup.addWidget(self.selBox, 5, 1)
-        # self.contentGroup.addWidget(self.sportBox, 6, 1)
-        # self.contentGroup.addWidget(self.travelBox, 7, 1)
-        # self.contentGroup.addWidget(self.utilityBox, 8, 1)
-        # self.contentGroup.addWidget(self.weddingBox, 9, 1)
-        # self.contentGroup.addWidget(self.whiteBoards, 10, 1)
-        }
-
         # Configuring Footer
         self.footer = QtWidgets.QHBoxLayout()
+        self.chooseFiles = QtWidgets.QPushButton("Choose Files")
         self.startButton = QtWidgets.QPushButton("Start")
         self.heightBox = QtWidgets.QLineEdit("500")
         self.widthBox = QtWidgets.QLineEdit("500") 
@@ -161,6 +107,7 @@ class mainUIClass(QtWidgets.QWidget):
         self.footer.addWidget(self.numLayersBox)
         self.footer.addWidget(spacingText)
         self.footer.addWidget(self.spacingBox)
+        self.footer.addWidget(self.chooseFiles)
         self.footer.addWidget(self.startButton)
 
         # self.footer.addWidget(self.clearButton)
@@ -181,44 +128,12 @@ class mainUIClass(QtWidgets.QWidget):
         self.layout.addLayout(self.footer, 4, 0, QtCore.Qt.AlignCenter)
 
         # Connecting buttons to function
-        # self.credButton.clicked.connect(self.showFiles)
         self.heightBox.textChanged.connect(self.handleChangeinHeight)
         self.widthBox.textChanged.connect(self.handleChangeinWidth)
         self.numLayersBox.textChanged.connect(self.handleChangeinNumLayers)
         self.spacingBox.textChanged.connect(self.handleChangeinSpacing)
-        # self.weightsToggler.stateChanged.connect(self.toggleWeights)
-        # self.cropToggler.stateChanged.connect(self.toggleCrop)
         self.searchGoogle.stateChanged.connect(self.toggleSearchGoogle)
         self.searchPinterest.stateChanged.connect(self.toggleSearchPinterest)
-        
-        # self.removeBackImages.stateChanged.connect(self.toggleRemoveBackImages)
-
-        {
-        # self.animalBox.stateChanged.connect(self.toggleAnimalBox)
-        # self.artsBox.stateChanged.connect(self.toggleArtsBox)
-        # self.birthdayBox.stateChanged.connect(self.toggleBirthdayBox)
-        # self.cityBox.stateChanged.connect(self.toggleCityBox)
-        # self.craftsBox.stateChanged.connect(self.toggleCraftsBox)
-        # self.docBox.stateChanged.connect(self.toggleDocBox)
-        # self.fashionBox.stateChanged.connect(self.toggleFashionBox)
-        # self.flowersBox.stateChanged.connect(self.toggleFlowersBox)
-        # self.foodBox.stateChanged.connect(self.toggleFoodBox)
-        # self.gardenBox.stateChanged.connect(self.toggleGardenBox)
-        # self.holidaysBox.stateChanged.connect(self.toggleHolidaysBox)
-        # self.housesBox.stateChanged.connect(self.toggleHousesBox)
-        # self.landBox.stateChanged.connect(self.toggleLandBox)
-        # self.nightBox.stateChanged.connect(self.toggleNightBox)
-        # self.perfBox.stateChanged.connect(self.togglePerfBox)
-        # self.petsBox.stateChanged.connect(self.togglePetsBox)
-        # self.recBox.stateChanged.connect(self.toggleRecBox)
-        # self.screenBox.stateChanged.connect(self.toggleScreenBox)
-        # self.selBox.stateChanged.connect(self.toggleSelBox)
-        # self.sportBox.stateChanged.connect(self.toggleSportBox)
-        # self.travelBox.stateChanged.connect(self.toggleTravelBox)
-        # self.utilityBox.stateChanged.connect(self.toggleUtilityBox)
-        # self.weddingBox.stateChanged.connect(self.toggleWeddingBox)
-        # self.whiteBoards.stateChanged.connect(self.toggleWhiteBoards)
-        }
 
         self.startButton.clicked.connect(self.toggleStartButton)
         self.startDateBox.dateChanged.connect(self.updateDate)
@@ -235,7 +150,8 @@ class mainUIClass(QtWidgets.QWidget):
         self.loadedIndicater()
         if self.driver.searchPinterest == True:
             PinterestDriver(out=self.driver.imageDir, key=self.pinKey, threads=10, images=self.numImages)
-
+        if len(os.listdir('out')) != 0:
+            RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
 
     # Functionality that is called when the choose credentials button is clicked
     def showFiles(self):
@@ -321,7 +237,7 @@ class mainUIClass(QtWidgets.QWidget):
 
             self.driver.removing = True
             RemoveDriver(dir=self.driver.imageDir,typeOfImages="person", useWeights=self.driver.weights, crop=self.driver.cropBoundingBoxes)
-            self.driver.removing = True
+            self.driver.removing = False
 
             # Creates the collage
             self.loadedIndicater()
@@ -351,89 +267,6 @@ class mainUIClass(QtWidgets.QWidget):
         self.driver.searchPinterest = self.searchPinterest.isChecked()
         print("toggledSearchPinterest: ", self.driver.searchPinterest)
 
-    {
-
-    # def toggleRemoveBackImages(self):
-    #     self.driver.removeBackImages = self.removeBackImages.isChecked()
-    #     print("toggledSearchForImages: ", self.driver.removeBackImages)
-
-    # def toggleAnimalBox(self):
-    #     self.driver.animals = self.animalBox.isChecked()
-
-    # def toggleArtsBox(self):
-    #     self.driver.arts = self.artsBox.isChecked()
-
-    # def toggleBirthdayBox(self):
-    #     self.driver.birthday = self.birthdayBox.isChecked()
-    #     print("toggledBirthdayBox: ", self.driver.birthday)
-
-    # def toggleCityBox(self):
-    #     self.driver.city = self.cityBox.isChecked()
-
-    # def toggleCraftsBox(self):
-    #     self.driver.crafts = self.craftsBox.isChecked()
-
-    # def toggleDocBox(self):
-    #     self.driver.doc = self.docBox.isChecked()
-
-    # def toggleFashionBox(self):
-    #     self.driver.fashion = self.fashionBox.isChecked()
-
-    # def toggleFlowersBox(self):
-    #     self.driver.flowers = self.flowersBox.isChecked()
-
-    # def toggleFoodBox(self):
-    #     self.driver.food = self.foodBox.isChecked()
-
-    # def toggleGardenBox(self):
-    #     self.driver.garden = self.gardenBox.isChecked()
-
-    # def toggleHolidaysBox(self):
-    #     self.driver.holidays = self.holidaysBox.isChecked()
-
-    # def toggleHousesBox(self):
-    #     self.driver.houses = self.housesBox.isChecked()
-
-    # def toggleLandBox(self):
-    #     self.driver.landscapes = self.landBox.isChecked()
-
-    # def toggleNightBox(self):
-    #     self.driver.night = self.nightBox.isChecked()
-
-    # def togglePeopleBox(self):
-    #     self.driver.people = self.peopleBox.isChecked()
-        
-    # def togglePerfBox(self):
-    #     self.driver.performances = self.perfBox.isChecked()
-
-    # def togglePetsBox(self):
-    #     self.driver.pets = self.petsBox.isChecked()
-
-    # def toggleRecBox(self):
-    #     self.driver.receipts = self.recBox.isChecked()
-
-    # def toggleScreenBox(self):
-    #     self.driver.screenshots = self.screenBox.isChecked()
-
-    # def toggleSelBox(self):
-    #     self.driver.selfies = self.selBox.isChecked()
-
-    # def toggleSportBox(self):
-    #     self.driver.sports = self.sportBox.isChecked()
-
-    # def toggleTravelBox(self):
-    #     self.driver.travel = self.travelBox.isChecked()
-
-    # def toggleUtilityBox(self):
-    #     self.driver.utility = self.utilityBox.isChecked()
-        
-    # def toggleWeddingBox(self):
-    #     self.driver.weddings = self.weddingBox.isChecked()
-
-    # def toggleWhiteBoards(self):
-    #     self.driver.whiteBoards = self.whiteBoards.isChecked()
-    }
-    
     def toggleStartButton(self):
         self.driver.startButton = True
         print("toggledStarButton: ", self.driver.startButton)

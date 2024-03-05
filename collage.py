@@ -109,11 +109,11 @@ class NewCollage:
             else:
                 if i % 2 == 0: 
                     # randWidth = randint(100,150)
-                    randWidth = randint(-50,50)
-                    randHeight = randint(-50,50)
+                    randWidth = randint(-100,150)
+                    randHeight = randint(-100,150)
                 elif i % 2 == 1:
-                    randWidth = randint(-100,100)
-                    randHeight = randint(-100,100)
+                    randWidth = randint(-150,100)
+                    randHeight = randint(-150,100)
                 base.paste(self.layers[i],(randWidth,randHeight),mask = self.layers[i])
         return base
     
