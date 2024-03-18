@@ -1,0 +1,13 @@
+Pillow
+os
+random
+math
+json
+PySide6
+pandas
+google-auth-oauthlib
+google.oauth2.credentials
+io
+IPython
+pinscrape
+rembg

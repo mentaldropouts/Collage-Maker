@@ -1,10 +1,15 @@
 # Ignore Mac system files
 .DS_store
-# Files 
+
+# Folder where photos are places
 result/*
 out/*
+
+# Folder where credentials are placed
 _secrets_/*
-_pycache_
+
+# Final Collage  
 test.png
+
+# Other
 __pycache__/
-Collage Images/
