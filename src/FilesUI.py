@@ -49,8 +49,9 @@ class filesUIClass(QtWidgets.QWidget):
         self.table_widget = QtWidgets.QTableWidget()
         self.table_widget.setColumnCount(2)
         self.table_widget.setHorizontalHeaderLabels(['', 'File Path'])
-        self.table_widget.setColumnWidth(0, 20)
-        self.table_widget.setMinimumWidth(100)
+        self.table_widget.setColumnWidth(0,50)
+        self.table_widget.setColumnWidth(1,400)
+        self.table_widget.setMinimumWidth(200)
         self.table_widget.setMaximumWidth(500)
 
         self.populate_table(self.folder_path)
@@ -90,7 +91,6 @@ class filesUIClass(QtWidgets.QWidget):
                 file_name_item = QtWidgets.QTableWidgetItem(file_name)
                 file_path_item = QtWidgets.QTableWidgetItem(file_path)
 
-
                 # Create a checkbox item for each row
                 checkbox_item = CheckBoxTableWidgetItem(checked=False)
                 # checkbox_item.stateChanged.con÷nect(lambda state: checkbox_item.check_item_state())
@@ -113,8 +113,10 @@ class filesUIClass(QtWidgets.QWidget):
                 current_width = pixmap.width()
                 current_height = pixmap.height()
                 # Get the target size (max_width, max_height)
-                max_width = self.image_preview_label.width()
-                max_height = self.image_preview_label.height()
+                # max_width = self.image_preview_label.width()
+                # max_height = self.image_preview_label.height()
+                max_width = 250
+                max_height = 250
 
                 # Calculate the scaling factors for width and height
                 width_scale_factor = max_width / current_width

@@ -113,8 +113,8 @@ class mainUIClass(QtWidgets.QWidget):
         # Configuring Layouts
         self.layout.addLayout(self.titleLayout,0,0)
         self.BodyLayout = QtWidgets.QHBoxLayout()
-        self.BodyLayout.addLayout(self.googleLayout)
         self.BodyLayout.addLayout(self.pinterestLayout)
+        self.BodyLayout.addLayout(self.googleLayout)
         self.layout.addLayout(self.BodyLayout,1,0)
         self.layout.addLayout(self.footer, 4, 0, QtCore.Qt.AlignCenter)
 
@@ -138,21 +138,22 @@ class mainUIClass(QtWidgets.QWidget):
 
     # Function for the Search Pinterest Button
     def searchP(self):
+        # If the box for searching Pinterest is ticked
         if self.driver.searchPinterest == True:
             # Changing state 
-            self.changeLabelSearching()
-
             self.run_Pinterest_Driver()
+            self.changeLabelSearching()
             
         # Removing Backgrounds of found images
         if len(os.listdir('out')) != 0:
 
             # Changing state
-            self.changeLabelRemoving()
             self.run_Remove_Driver()
-            
-        
+            self.changeLabelRemoving()
 
+        # Changing State    
+        self.changeLabelLoaded()
+            
     # Functionality that is called when the choose credentials button is clicked
     def showFiles(self):
         if self.searchGoogle.isChecked() and self.driver.credsLoaded == False:
@@ -313,7 +314,7 @@ class mainUIClass(QtWidgets.QWidget):
         self.loadedLabel.setStyleSheet("background-color: orange;")
 
     # Change the loadedLabel to "Finished"
-    def changeLabelLoaded(self):
+    def changeLabelFinished(self):
         self.loadedLabel.setText("Finished")
         self.loadedLabel.setStyleSheet("background-color: green;")
 
