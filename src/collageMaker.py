@@ -1,5 +1,5 @@
 from PySide6 import QtCore, QtWidgets, QtGui
-from mainUI import mainUIClass
+from mainLogic import mainUIClass
 from FilesUI import filesUIClass
 import sys, os
 

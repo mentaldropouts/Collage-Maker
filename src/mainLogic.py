@@ -2,8 +2,7 @@ import sys
 import random
 from time import sleep
 from PySide6 import QtCore, QtWidgets, QtGui
-from main import mainDriver
-
+from mainStates import mainDriver
 
 from Gdriver import GoogleDriver, delete_folders
 from PDriver import PinterestDriver
@@ -80,9 +79,6 @@ class mainUIClass(QtWidgets.QWidget):
         self.pinterestLayout.addWidget(self.numImagesBox)
         self.pinterestLayout.addWidget(self.pinterestSearchButton)
     
-        # Updates the indicator at start
-        self.loadedIndicater()
-
         # Configuring Footer
         self.footer = QtWidgets.QHBoxLayout()
         self.chooseFiles = QtWidgets.QPushButton("Choose Files")
