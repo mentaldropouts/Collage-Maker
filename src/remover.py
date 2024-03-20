@@ -18,11 +18,10 @@ class Images:
         self.files = self.throughWalk()
         self.weights = {}
         self.model = 'isnet-general-use'
-        self.output = 'out/'
         self.specFileName = ""
         self.usingWeights=usingWeights
         # used to determine the model, set depending on the content filter
-        makedirs("result", exist_ok=True)
+        makedirs("src/result", exist_ok=True)
         # makedirs(f'result/{self.typeOfImages}',  exist_ok=True)
 
 #####################################################################

@@ -155,7 +155,7 @@ class NewCollage:
                 self.current_x = 0 
                 self.current_y = 0
             self.curFileNum+=1
-    
+
 def CollageDriver(height, width, numLayers, useWeights, spacing):
     print("Entering CollageDriver")
     print(width, height)

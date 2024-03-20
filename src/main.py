@@ -1,8 +1,6 @@
 from Gdriver import GoogleDriver
 from remover import RemoveDriver
 from collage import CollageDriver
-from tkinter import *
-
 
 class mainDriver():
     def __init__(self) -> None:
@@ -18,7 +16,7 @@ class mainDriver():
         self.removing = False
         self.cropBoundingBoxes = True
         # State of buttons 
-        self.searchForImages = False
+        self.searchGoogle = False
         self.searchPinterest = False
         # Linked to seachForImages and seacrchPinterest 
         self.searching = False
