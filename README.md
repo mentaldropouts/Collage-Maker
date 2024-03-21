@@ -3,15 +3,35 @@
 ![badmath](https://img.shields.io/github/languages/top/mentaldropouts/collageApp)
 
 ## Description
+This application helps automate the process of creating collages, by assisting the user in collecting photos from their Google Photos account or from Pinterest,
+Using Collage Maker these chosen photos can be used to create countless collages in seconds.
 
-Provide a short description explaining the what, why, and how of your project. Use the following questions as a guide:
+## Installation
+You can install Collage Maker by running these commands
+```
+# Cloning repo
+git clone https://github.com/mentaldropouts/Collage-Maker.git
 
-I made this application because I love making collages. This program makes the process of making a collage completely automated. By using a credential.json file that you get from the Google Cloud Console, you can give the program access to your google information and it will pull photos automatically from your account. All you have to do is specify the filters you want to use in and run main.py.
+# Making a virtual enviornment
+pyenv virtualenv env
+pyenv activate env
 
+# Installing requiremnets
+pip install -r requirements.txt
+
+# Running the application
+python src/collageMaker.py
+```
 ## Usage
+### Searching Google Photos
 To use this program you first need to add your credentials.json file to a folder named \_secret_ in your cloned copy of the repo. For security reasons, this folder has been included in the .gitignore file so don't worry about accidentally commiting your google account information.
+### Searching Pinterest
+Just tick the checkbox and type in what ever you want to search for along with the number of images that you want and press the search button. It will buffer for a bit but if you inspect the terminal in which you started the app with it should show that it is removing the backgrounds of photos found. 
+### Making a collage
+Set the number of layers and size of the collage that you want to make then press the start button. If you have both "Search Google" and "Search Pinterest" boxes unticked then the process for making the collage should take only a second or two. 
+### Tips for using
+If you are getting alot of photos on the left side and not alot on the right, try reducing the number of layers and increasing the spacing value by 20 or so. This app allows you to manipulate alot of the parameters used in creating the collage but with that you have to perform some trial and error to get what you want. 
 
-Then once you have that set up you can set the filters and other paramters that you want to use in the main.py file and then run it. Then your collage should be saved to test.png.
 
 ## Example 
 ![Example](Examples/Example.png)
