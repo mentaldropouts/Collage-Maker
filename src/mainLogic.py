@@ -47,14 +47,19 @@ class mainUIClass(QtWidgets.QWidget):
         self.googleLayout = QtWidgets.QGridLayout()
         self.googleLayout.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft)
         self.searchGoogle = QtWidgets.QCheckBox("Search Google Photos")
-        credsLabel = QtWidgets.QLabel("*requires credentials")
+        self.credsSearchText = QtWidgets.QLabel("Credentials Not Loaded")
+        self.credsSearchButton = QtWidgets.QPushButton(text="Browse")
+        # credsLabel = QtWidgets.QLabel("*requires credentials")
         startDateText = QtWidgets.QLabel("Start Date:")
         endDateText = QtWidgets.QLabel("End Date:")
         self.endDateBox = QtWidgets.QDateEdit(sampleEndDate)
         self.startDateBox = QtWidgets.QDateEdit(sampleStartDate) 
+
         # Adding items to Google Layout
         self.googleLayout.addWidget(self.searchGoogle,0,0)
-        self.googleLayout.addWidget(credsLabel,1,0)
+        self.googleLayout.addWidget(self.credsSearchText, 1, 0)
+        self.googleLayout.addWidget(self.credsSearchButton, 1, 1)
+        # self.googleLayout.addWidget(credsLabel,1,0)
         self.googleLayout.addWidget(startDateText,2,0)
         self.googleLayout.addWidget(self.startDateBox,2,1)
         self.googleLayout.addWidget(endDateText,3,0)
@@ -83,10 +88,10 @@ class mainUIClass(QtWidgets.QWidget):
         self.footer = QtWidgets.QHBoxLayout()
         self.chooseFiles = QtWidgets.QPushButton("Choose Files")
         self.startButton = QtWidgets.QPushButton("Start")
-        self.heightBox = QtWidgets.QLineEdit("500")
-        self.widthBox = QtWidgets.QLineEdit("500") 
-        self.numLayersBox = QtWidgets.QLineEdit("20")
-        self.spacingBox = QtWidgets.QLineEdit("10")
+        self.heightBox = QtWidgets.QLineEdit(str(self.driver.height))
+        self.widthBox = QtWidgets.QLineEdit(str(self.driver.weights)) 
+        self.numLayersBox = QtWidgets.QLineEdit(str(self.driver.numLayers))
+        self.spacingBox = QtWidgets.QLineEdit(str(self.driver.spacing))
         heightText = QtWidgets.QLabel("Height:")
         widthText = QtWidgets.QLabel("Width:")
         numLayersText = QtWidgets.QLabel("Number of Layers:")
@@ -130,7 +135,8 @@ class mainUIClass(QtWidgets.QWidget):
         self.startDateBox.dateChanged.connect(self.updateDate)
         self.endDateBox.dateChanged.connect(self.updateDate)
         self.pinKeyword.textChanged.connect(self.updateKey)
-        self.searchGoogle.stateChanged.connect(self.showFiles)
+        self.credsSearchButton.clicked.connect(self.getFiles)
+        # self.searchGoogle.stateChanged.connect()
         self.numImagesBox.currentIndexChanged.connect(self.updateNumImages)
         self.clearButton.clicked.connect(self.clearFolders)
         self.pinterestSearchButton.clicked.connect(self.searchP)
@@ -153,9 +159,11 @@ class mainUIClass(QtWidgets.QWidget):
 
         # Changing State    
         self.changeLabelLoaded()
+
+        # TODO: Make it where the Search Pinterest Button is unclicked when searching is done
             
     # Functionality that is called when the choose credentials button is clicked
-    def showFiles(self):
+    def getFiles(self):
         if self.searchGoogle.isChecked() and self.driver.credsLoaded == False:
             fileDialog = QtWidgets.QFileDialog()
             fileDialog.setNameFilter("JSON files (*.json);;All files (*)")
@@ -163,33 +171,57 @@ class mainUIClass(QtWidgets.QWidget):
             if fileDialog.exec():
                 # Get the selected file name
                 selected_file = fileDialog.selectedFiles() 
-                print(f'Selected File: {selected_file}')
                 if selected_file[0].split('.')[-1] == 'json':
                     print("Current Credentials are json files!")
                     self.driver.credsLoaded = True
+                    self.driver.credsFile = selected_file[0]
+                    self.credsSearchText.setText("Credentials Loaded!")
+                    print(self.driver.credsFile, end="\n")
                     # Checking the Check Box on the UI
                     self.driver.searchGoogle = self.searchGoogle.isChecked()
+
+                    # Copying the contents of the file to __secrets__
+                    self.copyCredsToSecret(self.driver.credsFile)
+
                 elif selected_file == None:
                     print("ERROR: Current Credentials are not json files!")
                     self.driver.credsLoaded = False
                     self.searchGoogle.setChecked(False)
                 return
+    #####################################################
+    # Purpose: Copies file that user selects into the 
+    # _secrets_ folder
+    #####################################################
+    def copyCredsToSecret(self,file_name, destination_folder="../_secrets_/"):
+        if not os.path.exists(file_name):
+            raise FileNotFoundError(f"File '{file_name}' not found.")
+
+        os.makedirs(destination_folder, exist_ok=True)
+        base_name = os.path.basename(file_name)
+        destination_path = os.path.join(destination_folder, 'client_secret.json')
+        try:
+            # Open both files in binary mode ('rb' for reading, 'wb' for writing)
+            with open(file_name, 'rb') as source_file, open(destination_path, 'wb') as destination_file:
+                # Read data from the source file in chunks
+                chunk = source_file.read(1024)  # Adjust chunk size as needed
+                while chunk:
+                    destination_file.write(chunk)
+                    chunk = source_file.read(1024)
+            print(f"File '{file_name}' copied to '{destination_path}'")
+        except OSError as e:
+            raise OSError(f"Error copying file: {e}")
         
     # Functionality that handles date chages  
     def updateDate(self):
-            self.startDate = [self.startDateBox.date().year(), self.startDateBox.date().month(), self.startDateBox.date().day()]
-            self.endDate = [self.endDateBox.date().year(), self.endDateBox.date().month(), self.endDateBox.date().day()]
-            self.dateFilter = {
-                "startDate": {"year": self.startDate[0], "month": self.startDate[1], "day": self.startDate[2]},
-                "endDate": {"year": self.endDate[0], "month": self.endDate[1], "day": self.endDate[2]}
+            self.driver.startDate = [self.startDateBox.date().year(), self.startDateBox.date().month(), self.startDateBox.date().day()]
+            self.driver.endDate = [self.endDateBox.date().year(), self.endDateBox.date().month(), self.endDateBox.date().day()]
+            self.driver.dateFilter = {
+                "startDate": {"year": self.driver.startDate[0], "month": self.driver.startDate[1], "day": self.driver.startDate[2]},
+                "endDate": {"year": self.driver.endDate[0], "month": self.driver.endDate[1], "day": self.driver.endDate[2]}
             }
-
-            # print("start:", self.startDate)
-            # print("end:", self.endDate)
 
     def updateKey(self):
         self.pinKey = self.pinKeyword.text()
-        # print("PinKey = ", self.pinKey)
 
     # Getting the number of images for pinterest to search
     def updateNumImages(self):
@@ -197,42 +229,40 @@ class mainUIClass(QtWidgets.QWidget):
         print("Looking for ", self.numImages, " on Pinterest")
 
     # Functionality updates the indicator for loaded pictures
-    def loadedIndicater(self):
-        if self.driver.searching:
-            self.loadedLabel.setText("Searching")
-            self.loadedLabel.setStyleSheet("background-color: Aquamarine;")
-        elif self.driver.removing == True:
-            print("Removing state")
-            self.loadedLabel.setText("Removing")
-            self.loadedLabel.setStyleSheet("background-color: indigo;")
-        elif len(os.listdir('result')) != 0  and self.driver.removing == False and self.driver.searching == False:
-            self.loadedLabel.setText("Loaded")
-            self.loadedLabel.setStyleSheet("background-color: orange;")
-        elif os.path.exists('test.png') and os.path.exists('out') == False and os.path.exists('result') and self.driver.removing == False:
-            self.loadedLabel.setText("Done")
-            self.loadedLabel.setStyleSheet("background-color: green;")
-        elif len(os.listdir('out')) == 0 and len(os.listdir('result')) == 0:
-            self.loadedLabel.setText("Not Loaded")
-            self.loadedLabel.setStyleSheet("background-color: red;")
+    # def loadedIndicater(self):
+    #     if self.driver.searching:
+    #         self.loadedLabel.setText("Searching")
+    #         self.loadedLabel.setStyleSheet("background-color: Aquamarine;")
+    #     elif self.driver.removing == True:
+    #         print("Removing state")
+    #         self.loadedLabel.setText("Removing")
+    #         self.loadedLabel.setStyleSheet("background-color: indigo;")
+    #     elif len(os.listdir('result')) != 0  and self.driver.removing == False and self.driver.searching == False:
+    #         self.loadedLabel.setText("Loaded")
+    #         self.loadedLabel.setStyleSheet("background-color: orange;")
+    #     elif os.path.exists('test.png') and os.path.exists('out') == False and os.path.exists('result') and self.driver.removing == False:
+    #         self.loadedLabel.setText("Done")
+    #         self.loadedLabel.setStyleSheet("background-color: green;")
+    #     elif len(os.listdir('out')) == 0 and len(os.listdir('result')) == 0:
+    #         self.loadedLabel.setText("Not Loaded")
+    #         self.loadedLabel.setStyleSheet("background-color: red;")
 
     # Functionality that is called when the start button is clicked
     def start(self):
-        print("starting")
-        # Starting a search for images
-        if self.driver.searchGoogle or self.driver.searchPinterest: 
-            self.driver.searching == True
 
+        # DEBUGGING FUNCTIONS
+        self.driver.report()
+
+        # Starting a search for images
         if self.driver.startButton:
+            
             if self.driver.searchGoogle:
-                # Changing States
                 self.changeLabelSearching()
-                GoogleDriver(dateFilter=self.dateFilter, contentFilter=self.driver.contentFilter, layeredSearch=True)
-                self.driver.searching == False
+                self.run_Google_Driver()
 
             if self.driver.searchPinterest:
                 # Changing States
                 self.changeLabelSearching()
-                # Searching Pintestest
                 self.run_Pinterest_Driver()
             
             # Changing state
@@ -317,7 +347,7 @@ class mainUIClass(QtWidgets.QWidget):
     def changeLabelFinished(self):
         self.loadedLabel.setText("Finished")
         self.loadedLabel.setStyleSheet("background-color: green;")
-
+        
     # Helper function that run externally-defined functions
     def run_Pinterest_Driver(self):
         print("Running Pinterest Driver")
@@ -325,6 +355,12 @@ class mainUIClass(QtWidgets.QWidget):
                         key=self.pinKey, 
                         threads=10, 
                         images=self.numImages)
+        
+    def run_Google_Driver(self):
+        print("Running Google Driver")
+        GoogleDriver(dateFilter=self.driver.dateFilter, 
+                     contentFilter=self.driver.contentFilter, 
+                     layeredSearch=True)
     
     def run_Remove_Driver(self):
         print("Running Remove Driver")

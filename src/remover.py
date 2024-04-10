@@ -21,7 +21,7 @@ class Images:
         self.specFileName = ""
         self.usingWeights=usingWeights
         # used to determine the model, set depending on the content filter
-        makedirs("src/result", exist_ok=True)
+        makedirs("result", exist_ok=True)
         # makedirs(f'result/{self.typeOfImages}',  exist_ok=True)
 
 #####################################################################

@@ -14,7 +14,7 @@ class PhotoSearch:
 #####################################################################
 # Purpose: Initializing the Google Photos API and utilizing it to 
 # search for specific photographs given filters
-# Input: Your Google Credentials.json in a folder called "_secrets_"
+# Input: Your Google creds.json in a folder called "_secrets_"
 # Output: A class object of PhotoSearch that can hold the results
 #####################################################################
     def setup(self, date_filter, contentFilter):
@@ -24,22 +24,21 @@ class PhotoSearch:
         # Define the scopes
         self.scopes = ['https://www.googleapis.com/auth/photoslibrary.readonly']
 
-        # Load or obtain credentials
         creds = None
 
-        if os.path.exists('_secrets_/token.json'):
-            print("Loading credentials from file")
-            creds = Credentials.from_authorized_user_file('_secrets_/token.json', self.scopes)
-
+        if os.path.exists('../_secrets_/token.json'):
+            print("Loading creds from file")
+            creds = Credentials.from_authorized_user_file('../_secrets_/token.json', self.scopes)
+            # print("token: ", creds)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    '_secrets_/client_secret.json', self.scopes)
+                    '../_secrets_/client_secret.json', self.scopes)
                 creds = flow.run_local_server()
-                # Save the credentials for the next run
-                with open('_secrets_/token.json', 'w') as token:
+                # Save the creds for the next run
+                with open('../_secrets_/token.json', 'w') as token:
                     token.write(creds.to_json())
 
         # Create an authorized session

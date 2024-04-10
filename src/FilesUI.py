@@ -12,7 +12,7 @@ class CheckBoxTableWidgetItem(QtWidgets.QTableWidgetItem):
         self.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
         self.setCheckState(QtCore.Qt.Checked if checked else QtCore.Qt.Unchecked)
 
-        print(self.checkState())
+        # print(self.checkState())
         
     def check_item_state(self):
         state = self.checkState()
