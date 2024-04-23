@@ -20,7 +20,7 @@ pyenv activate env
 pip install -r requirements.txt
 
 # Running the application
-python src/collageMaker.py
+python src/main.py
 ```
 ## Usage
 ### Searching Google Photos
